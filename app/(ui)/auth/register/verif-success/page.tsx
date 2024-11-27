@@ -51,7 +51,7 @@ export default function VerifikasiEmail() {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <Image 
+        <Image
           src={ImageVerif} // Ganti dengan path gambar yang sesuai
           alt="Verifikasi Email"
           width={300} // Lebar gambar

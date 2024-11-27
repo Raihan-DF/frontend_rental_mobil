@@ -117,7 +117,7 @@ export function Navbar() {
                       className={`transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1 ${
                         isScrolled ? "text-black" : "text-black"
                       }`}
-                      href="/home"
+                      href="/"
                     >
                       About
                     </a>
@@ -127,7 +127,7 @@ export function Navbar() {
                       className={`transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1 ${
                         isScrolled ? "text-black" : "text-black"
                       }`}
-                      href="/home"
+                      href="/general/vehicles"
                     >
                       Vehicles
                     </a>
@@ -137,7 +137,7 @@ export function Navbar() {
                       className={`transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1 ${
                         isScrolled ? "text-black" : "text-black"
                       }`}
-                      href="#"
+                      href="/general/booking"
                     >
                       Booking
                     </a>
@@ -231,7 +231,7 @@ export function Navbar() {
                 <li>
                   <a
                     className="block text-black transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1"
-                    href="/home"
+                    href="/"
                   >
                     About
                   </a>

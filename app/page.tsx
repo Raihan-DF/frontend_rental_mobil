@@ -1,11 +1,93 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Navbar } from "./components/navbar/navbar";
 import axios from "axios";
 import Image from "next/image";
 import Background from "../assets/images/background_landingpage.png";
 import mobilCatalog from "../assets/images/fortuner.png";
+import BgbestOffer from "../assets/images/background_bestoffer.png";
+import Alphard from "../assets/images/alphard.png";
+import KijangInov from "../assets/images/kijang inova_kiri.png";
+import Fortuner from "../assets/images/fortuner.png";
+import Avanza from "../assets/images/avanza.png";
+
+import { Card, CardContent } from "@/app/(ui)/admin/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/app/(ui)/admin/components/ui/carousel";
+interface Vehicle {
+  price: any;
+  imageUrl: string;
+  id: number;
+  name: string;
+  year: number;
+  typeId: number;
+  transmission: string;
+  status: string;
+  licensePlate: string;
+  features?: string;
+  description?: string;
+  harga: number;
+  image?: string;
+}
 
 export default function Home() {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [showOptions, setShowOptions] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('');
+
+  // Fetch vehicles data from API
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      try {
+        const response = await fetch("/api/vehicles");
+        if (!response.ok) throw new Error("Error fetching vehicles data");
+        const data = await response.json();
+        setVehicles(data);
+      } catch (error) {
+        console.error("Error fetching vehicles:", error);
+      }
+    };
+
+    fetchVehicles();
+  }, []);
+  // Fungsi untuk menangani perubahan pencarian
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // Fungsi untuk menangani perubahan pilihan sorting
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortOption(e.target.value);
+  };
+
+  // Fungsi untuk mengurutkan kendaraan
+  const sortedVehicles = [...vehicles].sort((a, b) => {
+    switch (sortOption) {
+      case 'Title, ASC':
+        return a.name.localeCompare(b.name);
+      case 'Title, DESC':
+        return b.name.localeCompare(a.name);
+      case 'Price, ASC':
+        return a.harga - b.harga;
+      case 'Price, DESC':
+        return b.harga - a.harga;
+      default:
+        return 0; // Tidak ada pengurutan
+    }
+  });
+
+  // Filter kendaraan berdasarkan pencarian
+  const filteredVehicles = sortedVehicles.filter(vehicle =>
+    vehicle.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="bg-white">
       {/* Gambar Responsif */}
@@ -19,113 +101,239 @@ export default function Home() {
           objectFit="cover"
           alt="Picture of the author"
         />
+      </div>
+      {/* mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 */}
 
-        {/* Grid di atas gambar dengan ukuran kolom custom */}
-        {/* <div
-          className="absolute inset-0 top-16 grid gap-2"
-          style={{ gridTemplateColumns: "1fr 2fr 1fr" }}
-        > */}
-        {/* Kolom pertama (ukuran 1fr) */}
-        {/* <div className=" p-2">
-            <div
-              className="relative bg-transparent p-4  text-white font-bold"
-              style={{ gridColumn: "1 / span 3" }}
-            >
-              <h1 className="text-9xl leading-none">RENT</h1>
-              <h1 className="text-9xl leading-none">CARS</h1>
-              <h1 className="text-5xl leading-none">Solution For Your Trip</h1>
+      <section>
+        <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+          <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-2 lg:items-center lg:gap-x-12">
+            <div className="mx-auto max-w-lg lg:mx-0 ltr:lg:text-left rtl:lg:text-right">
+              <h2 className="text-3xl font-bold sm:text-4xl">About Us</h2>
+
+              <p className="mt-4 text-gray-600">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut
+                vero aliquid sint distinctio iure ipsum cupiditate? Quis, odit
+                assumenda? Deleniti quasi inventore, libero reiciendis minima
+                aliquid tempora. Obcaecati, autem.
+              </p>
             </div>
-          </div> */}
 
-        {/* Kolom kedua (ukuran 2fr, lebih lebar) */}
-        {/* <div className="relative w-full h-full col-span-1 flex items-center justify-center">
-            <Image
-              src={mobilCatalog}
-              layout="responsive"
-              width={800} // Set the base width
-              height={500} // Set the base height, keeping the aspect ratio
-              objectFit="cover"
-              alt="Content 2 Image"
-            />
-          </div> */}
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              <a
+                className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
+                href="#"
+              >
+                <span className="inline-block rounded-lg bg-gray-50 p-3">
+                  <svg
+                    className="size-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                    ></path>
+                  </svg>
+                </span>
 
-        {/* Konten ketiga dengan dua kotak untuk interior dan eksterior */}
-        {/* <div className="bg-white/70 p-4 pr-8 flex flex-col gap-4"> */}
-        {/* Kotak untuk gambar eksterior */}
-        {/* <div className="relative w-full h-48">
-              <Image
-                src="/path/to/exterior-image.jpg"
-                layout="fill"
-                objectFit="cover"
-                alt="Exterior Image"
-              />
-            </div> */}
+                <h2 className="mt-2 font-bold">Content</h2>
 
-        {/* Kotak untuk gambar interior */}
-        {/* <div className="relative w-full h-48">
-              <Image
-                src="/path/to/interior-image.jpg"
-                layout="fill"
-                objectFit="cover"
-                alt="Interior Image"
-              />
+                <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
+                  Lorem ipsum dolor sit amet consectetur.
+                </p>
+              </a>
+
+              <a
+                className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
+                href="#"
+              >
+                <span className="inline-block rounded-lg bg-gray-50 p-3">
+                  <svg
+                    className="size-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                    ></path>
+                  </svg>
+                </span>
+
+                <h2 className="mt-2 font-bold">Content</h2>
+
+                <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
+                  Lorem ipsum dolor sit amet consectetur.
+                </p>
+              </a>
+
+              <a
+                className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
+                href="#"
+              >
+                <span className="inline-block rounded-lg bg-gray-50 p-3">
+                  <svg
+                    className="size-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                    ></path>
+                  </svg>
+                </span>
+
+                <h2 className="mt-2 font-bold">Content</h2>
+
+                <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
+                  Lorem ipsum dolor sit amet consectetur.
+                </p>
+              </a>
             </div>
           </div>
-        </div> */}
+        </div>
+      </section>
 
-        <div className="absolute inset-0 top-16 grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
-          <div className="h-32 rounded-lg bg-gray-200">
-            <div className=" p-2">
-              <div
-                className="relative bg-transparent p-4  text-white font-bold"
-                style={{ gridColumn: "1 / span 3" }}
-              >
-                <h1 className="text-9xl leading-none">RENT</h1>
-                <h1 className="text-9xl leading-none">CARS</h1>
-                <h1 className="text-5xl leading-none">
-                  Solution For Your Trip
-                </h1>
+      <section>
+        <div
+          className="relative w-full h-auto"
+          style={{
+            backgroundImage: `url(${BgbestOffer.src})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-16">
+              <div className="relative justify-center lg:col-span-2 h-64 overflow-hidden rounded-lg sm:h-80 lg:h-full">
+                <Image
+                  alt="Toyota Alphard 2023"
+                  src={Alphard}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  layout="fill" // Use layout fill to ensure the image covers the container
+                />
+              </div>
+
+              <div className="flex flex-col justify-center lg:py-24 text-center lg:text-left">
+                <h2 className="text-3xl font-bold sm:text-4xl text-white">
+                  Best Offer
+                </h2>
+
+                <p className="mt-4 text-white text-lg sm:text-xl">
+                  Toyota Alphard (2023)
+                </p>
+
+                <a
+                  href="#"
+                  className="mt-8 inline-block rounded bg-indigo-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-yellow-400"
+                >
+                  Rent Now
+                </a>
               </div>
             </div>
           </div>
-          <div className="h-32 rounded-lg bg-gray-200 lg:col-span-2"></div>
-          <div className="h-32 rounded-lg bg-gray-200"></div>
         </div>
-      </div>
+      </section>
 
-      {/* Bagian About Us */}
-      <div className="flex flex-col md:flex-row bg-white p-8">
-        {/* Bagian Teks */}
-        <div className="md:w-2/3">
-          <h2 className="text-3xl font-bold mb-4 text-black">ABOUT US</h2>
-          <p className="text-gray-600 mb-4">
-            CARLINK adalah perusahaan rental mobil terkemuka di Yogyakarta yang
-            menawarkan beragam pilihan kendaraan berkualitas, mulai dari mobil
-            ekonomi hingga premium, yang siap memenuhi kebutuhan transportasi
-            Anda.
+      <section className="bg-[#DDDDEB]">
+      <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+        <header>
+          <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
+            Vehicles Collection
+          </h2>
+          <p className="mt-4 max-w-md text-black">
+            Pilih kendaraan yang sesuai dengan selera anda, dan nikmati fasilitasnya...
           </p>
-          <p className="text-gray-600 mb-4">
-            Dengan layanan profesional dan armada yang terawat, CARLINK hadir
-            untuk menyediakan solusi transportasi yang fleksibel, baik untuk
-            perjalanan harian, wisata keluarga, maupun keperluan bisnis.
-          </p>
-        </div>
+        </header>
 
-        {/* Bagian Card Kotak */}
-        <div className="grid grid-cols-2 gap-4 md:w-1/3 md:ml-4">
-          {/* Kotak pertama dengan tulisan */}
-          <div className="bg-[#4B5768] text-white p-8 rounded-lg flex flex-col items-center justify-center">
-            <span className="text-3xl font-bold">+1 YEARS</span>
-            <span className="text-xl">EXPERIENCE</span>
+        <div className="mt-8 sm:flex sm:items-center sm:justify-between">
+          <div className="hidden sm:block">
+            <label htmlFor="SortBy" className="sr-only">Sort By</label>
+            <select
+              id="SortBy"
+              value={sortOption}
+              onChange={handleSortChange}
+              className="h-10 background bg-transparent rounded border-gray-300 text-sm"
+            >
+              <option value="">Sort By</option>
+              <option value="Title, ASC">Name, A to Z</option>
+              <option value="Title, DESC">Name, Z to A</option>
+              <option value="Price, ASC">Min Price</option>
+              <option value="Price, DESC">Max Price</option>
+            </select>
           </div>
 
-          {/* Kotak kedua */}
-          <div className="bg-[#A8A6B0] p-8 rounded-lg"></div>
-
-          {/* Kotak ketiga */}
-          <div className="bg-[#0F212B] p-8 rounded-lg col-span-2 row-span-2"></div>
+          <div className="mt-4 sm:mt-0">
+            <input
+              type="text"
+              placeholder="Search vehicles..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="h-10 rounded border-gray-300 px-4 text-sm"
+            />
+          </div>
         </div>
+
+        <Carousel className="mt-4">
+          <CarouselContent className="-ml-1">
+            {filteredVehicles.map((vehicle) => (
+              <CarouselItem key={vehicle.id} className="pl-1 md:basis-1/2 lg:basis-1/3">
+                <div className="p-1">
+                  <Card>
+                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                      <a href="#" className="group block overflow-hidden">
+                        <Image
+                          src={vehicle.imageUrl} // Assuming image URL is in vehicle data
+                          alt={vehicle.name}
+                          className="h-[250px] w-auto object-contain transition duration-500 group-hover:scale-105"
+                          width={250} // Adjust width as needed
+                          height={250} // Adjust height as needed
+                        />
+                        <div className="relative pt-3">
+                          <h3 className="text-xs text-gray-700 group-hover:underline group-hover:underline-offset-4">
+                            {vehicle.name} ({vehicle.year})
+                          </h3>
+                          <p className="mt-2">
+                            <span className="sr-only"> Regular Price </span>
+                            <span className="tracking-wider text-gray-900">
+                              IDR {vehicle.harga.toLocaleString()}{" "}
+                              {/* Format price */}
+                            </span>
+                          </p>
+                        </div>
+                      </a>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
+    </section>
     </div>
   );
 }
+

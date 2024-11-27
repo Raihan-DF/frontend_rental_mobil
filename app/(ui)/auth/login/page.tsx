@@ -11,6 +11,7 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Cookie from "js-cookie";
 
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -29,7 +30,7 @@ export default function Login() {
   // Fungsi untuk handle login
   const onSubmit = async (data: { username: string; password: string }) => {
     setErrorMessage('');
-    
+
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -45,7 +46,7 @@ export default function Login() {
         // Tampilkan toast ketika login berhasil
         toast.success('Login berhasil!', {
           position: "top-right",
-          autoClose: 3000,
+          autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -59,11 +60,18 @@ export default function Login() {
           localStorage.setItem('access_token', result.accessToken);
           localStorage.setItem('refresh_token', result.refreshToken);
           localStorage.setItem('username', result.username);
+          localStorage.setItem('role',result.id_role);
         }
 
         // Redirect setelah beberapa detik untuk memberikan waktu toast muncul
         setTimeout(() => {
-          window.location.href = '/customer/homePage';
+          if(result.role ===1){
+            window.location.href = '/customer/homePage'
+          }else if(result.role === 2){
+            window.location.href = '/admin'
+          }else if(result.role === 3){
+            window.location.href = '/owner/menu';
+          }
         }, 3000); // 3 detik sebelum redirect
       } else {
         // Jika respons bukan OK, berarti ada masalah seperti password salah
