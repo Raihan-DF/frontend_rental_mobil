@@ -36,7 +36,9 @@ export default function Expenses() {
   const [showOptions, setShowOptions] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [currentExpense, setCurrentExpense] = useState<Expense | undefined>(undefined);
+  const [currentExpense, setCurrentExpense] = useState<Expense | undefined>(
+    undefined
+  );
 
   // State untuk pencarian
   const [searchName, setSearchName] = useState("");
@@ -134,7 +136,13 @@ export default function Expenses() {
     setExpenses((prev) =>
       prev.map((expense) =>
         expense.id === updatedExpense.id
-          ? { ...expense, expenseName: updatedExpense.expenseName, quantity: updatedExpense.quantity, price: updatedExpense.price, total: updatedExpense.total } // Memperbarui semua properti yang diubah
+          ? {
+              ...expense,
+              expenseName: updatedExpense.expenseName,
+              quantity: updatedExpense.quantity,
+              price: updatedExpense.price,
+              total: updatedExpense.total,
+            } // Memperbarui semua properti yang diubah
           : expense
       )
     );
@@ -189,11 +197,11 @@ export default function Expenses() {
       </CardHeader>
       <CardContent>
         {/* Search Section */}
-        <div className="mb-4 flex gap-4">
+        <div className="mb-4 flex flex-wrap items-center gap-4">
           <input
             type="text"
             placeholder="Search by name"
-            className="p-2 border border-gray-300 rounded"
+            className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
           />
@@ -202,33 +210,33 @@ export default function Expenses() {
               type="checkbox"
               checked={isDateRangeChecked}
               onChange={(e) => setIsDateRangeChecked(e.target.checked)}
-              className="mr-2"
+              className="mr-2 accent-blue-500"
             />
             Search by date range
           </label>
+          {isDateRangeChecked && (
+            <div className="flex items-center gap-4">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          )}
+          <button
+            onClick={handleSearch}
+            className="px-6 py-2 bg-blue-600 text-white rounded shadow-md hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Search
+          </button>
         </div>
-        {isDateRangeChecked && (
-          <div className="mb-4 flex gap-4">
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="p-2 border border-gray-300 rounded"
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="p-2 border border-gray-300 rounded"
-            />
-          </div>
-        )}
-        <button
-          onClick={handleSearch}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Search
-        </button>
 
         {/* Table */}
         <Table>

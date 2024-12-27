@@ -335,7 +335,6 @@ function MyProfile() {
 
 export default MyProfile;
 
-
 interface Booking {
   id: number;
   vehicle: {
@@ -350,16 +349,25 @@ interface Booking {
 }
 
 function MyOrder() {
+  // Tambahkan tipe data untuk state bookings
   const [bookings, setBookings] = useState<Booking[]>([]);
-
+  const [showModal, setShowModal] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
-    // Fetch data dari API
     async function fetchBookings() {
       try {
         const response = await fetch("/api/bookings/pending"); // Endpoint API
         const data = await response.json();
-        setBookings(data);
+
+        // Periksa apakah data adalah array dengan tipe Booking
+        if (Array.isArray(data)) {
+          setBookings(data);
+        } else {
+          console.error("Invalid data format:", data);
+        }
       } catch (error) {
         console.error("Error fetching bookings:", error);
       }
@@ -368,9 +376,44 @@ function MyOrder() {
     fetchBookings();
   }, []);
 
+  const handleCancelClick = (bookingId: number) => {
+    setSelectedBookingId(bookingId);
+    setShowModal(true);
+  };
+
+  const handleCancelBooking = async () => {
+    if (selectedBookingId === null) return;
+
+    try {
+      const response = await fetch(
+        `/api/bookings/cancel/${selectedBookingId}`,
+        {
+          method: "PATCH", // Updated to PATCH as per your controller method
+          headers: {
+            "Content-Type": "application/json",
+            AccessToken: localStorage.getItem("access_token") || "",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to cancel booking");
+      }
+
+      // Refresh the list of bookings after cancellation
+      setBookings(
+        bookings.filter((booking) => booking.id !== selectedBookingId)
+      );
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error canceling booking:", error);
+      alert("Failed to cancel booking. Please try again.");
+    }
+  };
+
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">My Orders</h2>
+      {/* <h2 className="text-xl font-bold mb-4">My Orders</h2> */}
       {bookings.length > 0 ? (
         <div className="grid gap-4">
           {bookings.map((booking) => (
@@ -392,7 +435,7 @@ function MyOrder() {
                 <strong>Duration:</strong> {booking.duration} days
               </p>
               <p>
-                <strong>Status:</strong>{" "}
+                <strong>Status:</strong>
                 <span
                   className={`${
                     booking.payment.status === "PENDING"
@@ -403,11 +446,43 @@ function MyOrder() {
                   {booking.payment.status}
                 </span>
               </p>
+              <button
+                className="mt-2 bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
+                onClick={() => handleCancelClick(booking.id)}
+              >
+                Cancel Booking
+              </button>
             </div>
           ))}
         </div>
       ) : (
         <p>No pending bookings found.</p>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow-md">
+            <h3 className="text-lg font-semibold mb-4">Cancel Booking</h3>
+            <p className="mb-4">
+              Are you sure you want to cancel this booking? Please note that any
+              deposit paid will be forfeited.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                className="bg-gray-300 text-gray-700 py-1 px-4 rounded hover:bg-gray-400"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600"
+                onClick={handleCancelBooking}
+              >
+                Confirm Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

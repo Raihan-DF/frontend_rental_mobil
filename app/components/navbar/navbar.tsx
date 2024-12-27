@@ -30,9 +30,6 @@ export function Navbar() {
     refreshToken: string | null
   ) => {
     try {
-      // console.log(accessToken);
-      // console.log(refreshToken);
-
       if (accessToken !== null) {
         const response = await fetch("/api/auth/check-access-token", {
           method: "POST",
@@ -46,9 +43,6 @@ export function Navbar() {
         });
 
         const result = await response.json();
-
-        // console.log(result);
-        // console.log(accessToken);
 
         if (result.message !== "OK" && response.status !== 400) {
           Cookie.set("access_token", result.accessToken);
@@ -72,9 +66,6 @@ export function Navbar() {
 
     const access_token = localStorage.getItem("access_token");
     const refresh_token = localStorage.getItem("refresh_token");
-
-    console.log(access_token);
-    console.log(refresh_token);
 
     checkAndRequestAccessToken(access_token, refresh_token);
 
@@ -100,23 +91,20 @@ export function Navbar() {
             <div className="md:flex md:items-center md:gap-12">
               <a className="block" href="/" style={{ color: "#0F212B" }}>
                 <div className="flex items-center">
-                  {/* Gambar */}
                   <Image src={Logo} width={60} height={60} alt="CarLink Logo" />
-                  {/* Teks di sebelah gambar */}
                   <h1 className="ml-1 font-semibold text-xl">Carlink</h1>
                 </div>
               </a>
             </div>
 
-            {/* Navigation for larger screens */}
             <div className="hidden md:block">
               <nav aria-label="Global">
                 <ul className="flex items-center gap-6 text-sm">
                   <li>
                     <a
-                      className={`transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1 ${
+                      className={`transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1 ${
                         isScrolled ? "text-black" : "text-black"
-                      }`}
+                      } hover:text-green-500`}
                       href="/"
                     >
                       About
@@ -124,29 +112,29 @@ export function Navbar() {
                   </li>
                   <li>
                     <a
-                      className={`transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1 ${
+                      className={`transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1 ${
                         isScrolled ? "text-black" : "text-black"
-                      }`}
+                      } hover:text-green-500`}
                       href="/general/vehicles"
                     >
                       Vehicles
                     </a>
                   </li>
-                  <li>
+                  {/* <li>
                     <a
-                      className={`transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1 ${
+                      className={`transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1 ${
                         isScrolled ? "text-black" : "text-black"
-                      }`}
+                      } hover:text-green-500`}
                       href="/general/booking"
                     >
                       Booking
                     </a>
-                  </li>
+                  </li> */}
                   <li>
                     <a
-                      className={`transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1 ${
+                      className={`transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1 ${
                         isScrolled ? "text-black" : "text-black"
-                      }`}
+                      } hover:text-green-500`}
                       href="#"
                     >
                       Contacts
@@ -157,7 +145,6 @@ export function Navbar() {
             </div>
 
             <div className="flex items-center gap-4">
-              {/* Login and Register for larger screens */}
               {accessToken !== null ? (
                 <a
                   href="/customer/profile"
@@ -197,11 +184,10 @@ export function Navbar() {
                 </div>
               )}
 
-              {/* Hamburger menu for mobile */}
               <div className="block md:hidden">
                 <button
                   onClick={toggleMobileMenu}
-                  className="rounded  p-2 text-gray-600 transition hover:text-black/75"
+                  className="rounded p-2 text-gray-600 transition hover:text-black/75"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -223,14 +209,13 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-white shadow-lg">
             <nav aria-label="Global" className="p-4">
               <ul className="space-y-4 text-sm">
                 <li>
                   <a
-                    className="block text-black transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1"
+                    className="block text-black hover:text-green-500 transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1"
                     href="/"
                   >
                     About
@@ -238,7 +223,7 @@ export function Navbar() {
                 </li>
                 <li>
                   <a
-                    className="block text-black transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1"
+                    className="block text-black hover:text-green-500 transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1"
                     href="#"
                   >
                     Vehicles
@@ -246,7 +231,7 @@ export function Navbar() {
                 </li>
                 <li>
                   <a
-                    className="block text-black transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1"
+                    className="block text-black hover:text-green-500 transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1"
                     href="#"
                   >
                     Booking
@@ -254,7 +239,7 @@ export function Navbar() {
                 </li>
                 <li>
                   <a
-                    className="block text-black transition hover:text-white focus:bg-gray-200 active:bg-black rounded-md px-2 py-1"
+                    className="block text-black hover:text-green-500 transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1"
                     href="#"
                   >
                     Contacts

@@ -17,8 +17,8 @@ import {
 } from "@/app/(ui)/admin/components/ui/table";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
-// import AddMaintenanceModal from "../../../../components/modal/maintenance/addMaintenance/page";
-// import EditMaintenanceModal from "@/app/components/modal/maintenance/editMaintenance/page";
+import AddMaintenanceModal from "@/app/components/modal/maintenance/addMaintenance/page";
+import EditMaintenanceModal from "@/app/components/modal/maintenance/editMaintenance/page";
 
 // Definisikan tipe untuk maintenance
 interface Maintenance {
@@ -26,7 +26,7 @@ interface Maintenance {
   vehicleId: number;
   date: string;
   mechanicName: string;
-  details:string;
+  details: string;
   status: string;
   vehicle: {
     id: number;
@@ -84,8 +84,8 @@ export default function Maintenance() {
 
   const deleteMaintenance = async (id: number) => {
     try {
-      const response = await fetch(`/api/maintenance/${id}`, {
-        method: "DELETE",
+      const response = await fetch(`/api/maintenance/${id}/softdelete`, {
+        method: "PATCH",
       });
 
       if (response.ok) {
@@ -134,18 +134,14 @@ export default function Maintenance() {
               <TableRow key={maintenance.id}>
                 <TableCell>{maintenance.date}</TableCell>
                 <TableCell>{maintenance.mechanicName}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-left">
                   {maintenance.vehicle?.name || "N/A"}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-left">
                   {maintenance.vehicle?.licensePlate || "N/A"}
                 </TableCell>
-                <TableCell className="text">
-                  {maintenance.details}
-                </TableCell>
-                <TableCell className="text">
-                  {maintenance.status}
-                </TableCell>
+                <TableCell className="text">{maintenance.details}</TableCell>
+                <TableCell className="text">{maintenance.status}</TableCell>
                 <TableCell className="text-right relative flex justify-center items-center">
                   <Icon
                     icon="mdi:dots-vertical"
@@ -178,18 +174,18 @@ export default function Maintenance() {
         </Table>
       </CardContent>
       {/* Add Maintenance Modal */}
-      {/* <AddMaintenanceModal
+      <AddMaintenanceModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddMaintenance={handleAddMaintenance}
-      /> */}
+      />
       {/* Edit Maintenance Modal */}
-      {/* <EditMaintenanceModal
+      <EditMaintenanceModal
         isOpen={isModalEditOpen}
         onClose={() => setIsModalEditOpen(false)}
-        onUpdateMaintenance={handleEditMaintenance}
-        maintenance={maintenanceToEdit}
-      /> */}
+        maintenanceId={maintenanceToEdit?.id || 0} // Pass the ID only for fetching data
+        onEditMaintenance={handleEditMaintenance}
+      />
     </Card>
   );
 }

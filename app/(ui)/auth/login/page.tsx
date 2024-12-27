@@ -66,11 +66,11 @@ export default function Login() {
         // Redirect setelah beberapa detik untuk memberikan waktu toast muncul
         setTimeout(() => {
           if(result.role ===1){
-            window.location.href = '/customer/homePage'
+            window.location.href = '/'
           }else if(result.role === 2){
             window.location.href = '/admin'
           }else if(result.role === 3){
-            window.location.href = '/owner/menu';
+            window.location.href = '/owner';
           }
         }, 3000); // 3 detik sebelum redirect
       } else {

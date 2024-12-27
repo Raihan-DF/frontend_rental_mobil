@@ -87,7 +87,7 @@ export default function Booking() {
       return;
     }
 
-    if(!proofOfTransfer){
+    if(!proofOfTransfer && paymentMethod === "CASH"){
       setErrorMessage("Harus mengirimkan bukti transfer!");
       return;
     }
@@ -107,11 +107,15 @@ export default function Booking() {
 
       const downPayment = vehiclePricePerHour * 1; // Uang muka = harga kendaraan selama 1 jam
 
+
       const formFile = new FormData();
-      formFile.append('file',proofOfTransfer)
-      const resultUploadFile = await UploadFile(formFile, access_token);
-      const namaFile = resultUploadFile.img_path;
-      console.log("Berhasil upload", namaFile);
+      let namaFile: string | null = null;
+      if(paymentMethod === "CASH" && proofOfTransfer){
+        formFile.append('file',proofOfTransfer);
+        const resultUploadFile = await UploadFile(formFile, access_token);
+        namaFile = resultUploadFile.img_path;
+        console.log("Berhasil upload", namaFile);
+      }
 
       const bodyData = {
         vehicleId: vehicle?.id, // Pastikan hanya ID yang dikirim
@@ -120,7 +124,7 @@ export default function Booking() {
         duration: parsedDuration,
         withDriver: isDriver,
         amount: calculatedAmount,
-        paymentMethod: "CASH", // Default payment method
+        paymentMethod: paymentMethod, // Default payment method
         isDownPayment: downPayment, // Menggunakan DP
         paymentProof: namaFile, // Bisa diganti URL valid
         ...(isDriver
@@ -145,11 +149,18 @@ export default function Booking() {
 
       const result = await response.json();
 
+      console.log(result);
+
       if (response.ok) {
         toast.success("Booking added successfully!", {
           position: "top-right",
           autoClose: 1000,
         });
+
+        if(paymentMethod === "TRANSFER"){
+          window.location.href = result.url;
+        }
+
         setTimeout(() => {
           window.location.href="/customer/profile?page=MyOrder"
         }, 1000);
@@ -394,8 +405,8 @@ export default function Booking() {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="cash"
-                    checked={paymentMethod === "cash"}
+                    value="CASH"
+                    checked={paymentMethod === "CASH"}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className="form-radio h-4 w-4 text-blue-600"
                   />
@@ -405,8 +416,8 @@ export default function Booking() {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="transfer"
-                    checked={paymentMethod === "transfer"}
+                    value="TRANSFER"
+                    checked={paymentMethod === "TRANSFER"}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className="form-radio h-4 w-4 text-blue-600"
                   />
@@ -416,7 +427,7 @@ export default function Booking() {
             </div>
 
             {/* Jika metode cash */}
-            {paymentMethod === "cash" && (
+            {paymentMethod === "CASH" && (
               <div className="bg-white shadow-md rounded-lg p-6">
                 <div className="mb-6">
                   <label
@@ -464,41 +475,22 @@ export default function Booking() {
             )}
 
             {/* Jika metode transfer */}
-            {paymentMethod === "transfer" && (
+            {paymentMethod === "TRANSFER" && (
               <div>
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-700">Bank Info</p>
-                  <ul className="text-sm text-gray-600 mt-2">
-                    <li>Bank Name: ABC Bank</li>
-                    <li>Account Name: Rental Mobil</li>
-                    <li>Account Number: 123456789</li>
-                  </ul>
-                </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="proofOfTransfer"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Upload Transfer Proof
-                  </label>
-                  <input
-                    type="file"
-                    id="proofOfTransfer"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  />
-                  {proofOfTransfer && (
-                    <p className="mt-2 text-sm text-gray-600">
-                      Selected file: {proofOfTransfer.name}
-                    </p>
-                  )}
-                </div>
+                <p>akan di arahkan menuju tampilan invoice dari paymentGateWay kami</p>
+                {/* <button onClick={handleBooking} className="bg-blue-600 text-white p-2 rounded-md">
+                  bayar
+                </button> */}
               </div>
             )}
           </div>
 
           <div className="flex justify-end items-center col-span-1 sm:col-span-3 mt-4">
+            <button
+            // onClick={}
+            className="bg-red-700 rounded-lg hover:bg-red-900">
+              Cancel
+            </button>
             <button
               onClick={handleBooking}
               className="px-4 py-2 pb-2 pt-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"

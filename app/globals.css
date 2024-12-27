@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* body{
-} */
+body{
+  @apply font-Kumbh;
+}
 
 @layer base {
   :root {

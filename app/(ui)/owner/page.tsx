@@ -14,6 +14,8 @@ import {
   CreditCard,
   ChevronDown,
 } from "lucide-react";
+import Image from "next/image";
+import Logo from "@/assets/images/LogoCarlink_text.png";
 
 import { Badge } from "@/app/(ui)/admin/components/ui/badge";
 import { Button } from "@/app/(ui)/admin/components/ui/button";
@@ -29,14 +31,10 @@ import {
   SheetTrigger,
 } from "@/app/(ui)/admin/components/ui/sheet";
 import { ModeToggle } from "@/app/(ui)/admin/components/ui/mode-toggle";
-import Image from "next/image";
-import Logo from "@/assets/images/LogoCarlink_text.png";
-import Vehicles from "@/app/(ui)/admin/components/features/vehicles";
-import WithoutDriver from "@/app/(ui)/admin/components/features/bookingWithoutdriver";
-import WithDriver from "@/app/(ui)/admin/components/features/bookingWithdriver";
-import Payments from "@/app/(ui)/admin/components/features/payment";
-import Expense from "@/app/(ui)/admin/components/features/expense";
-import Maintenance from "@/app/(ui)/admin/components/features/maintenance";
+import Income from "@/app/(ui)/owner/components/features/income";
+import Expense from "@/app/(ui)/owner/components/features/expense";
+import Maintenance from "@/app/(ui)/owner/components/features/maintenance";
+import Employee from "@/app/(ui)/owner/components/features/employee";
 
 export default function Dashboard() {
   const [activeMenu, setActiveMenu] = useState<string>("");
@@ -48,9 +46,9 @@ export default function Dashboard() {
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       {/* Sidebar */}
-      <div className="bg-[#3C4D55] text-white hidden border-r bg-muted/40 md:block">
+      <div className="bg-[#3C4D55] hidden border-r bg-muted/40 md:block text-white">
         <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
               {/* <Package2 className="h-6 w-6" /> */}
               <div className="flex items-center">
@@ -63,6 +61,7 @@ export default function Dashboard() {
             </Link>
           </div>
           <nav className="grid items-start px-2 text-lg font-medium lg:px-4">
+            {/* dashboard */}
             <Link
               href="#"
               className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
@@ -75,72 +74,31 @@ export default function Dashboard() {
               <Home className="h-4 w-4" />
               Dashboard
             </Link>
-            {/* Dropdown untuk Booking */}
-            <div className="relative">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className={`text-lg font-medium w-full justify-start flex items-center gap-3 px-3 py-2 rounded-lg ${
-                      activeMenu === "booking"
-                        ? "bg-[#0F212B] text-primary"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    <ShoppingCart className="h-4 w-4"/>
-                    Booking
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-full">
-                  <DropdownMenuItem
-                    onClick={() => handleMenuClick("withDriver")}
-                  >
-                    With Driver
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleMenuClick("withoutDriver")}
-                  >
-                    Without Driver
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            {/* Employee */}
             <Link
               href="#"
               className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                activeMenu === "payment"
+                activeMenu === "employee"
                   ? "bg-[#0F212B] text-primary"
                   : "text-muted-foreground"
               }`}
-              onClick={() => handleMenuClick("payment")}
+              onClick={() => handleMenuClick("employee")}
+            >
+              <Home className="h-4 w-4" />
+              Employee
+            </Link>
+            {/* Income */}
+            <Link
+              href="#"
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                activeMenu === "income"
+                  ? "bg-[#0F212B] text-primary"
+                  : "text-muted-foreground"
+              }`}
+              onClick={() => handleMenuClick("income")}
             >
               <CreditCard className="h-4 w-4" />
-              Payment
-            </Link>
-            <Link
-              href="#"
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                activeMenu === "vehicles"
-                  ? "bg-[#0F212B] text-primary"
-                  : "text-muted-foreground"
-              }`}
-              onClick={() => handleMenuClick("vehicles")}
-            >
-              <Package2 className="h-4 w-4" />
-              Vehicles
-            </Link>
-            <Link
-              href="#"
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                activeMenu === "driver"
-                  ? "bg-[#0F212B] text-primary"
-                  : "text-muted-foreground"
-              }`}
-              onClick={() => handleMenuClick("driver")}
-            >
-              <Users className="h-4 w-4" />
-              Driver Assignment
+              Income
             </Link>
             {/* Maintenance */}
             <Link
@@ -193,7 +151,7 @@ export default function Dashboard() {
           </Sheet>
 
           <div className="ml-auto flex items-center gap-4">
-          <span className="text-lg font-Kumbh font-bold">Admin</span>
+          <span className="text-lg font-Kumbh font-bold">Owner</span>
             {" "}
             {/* Kontainer baru untuk mengelompokkan konten ke kanan */}
             <ModeToggle />
@@ -229,10 +187,10 @@ export default function Dashboard() {
 
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           {activeMenu === "dashboard" && <div>Dashboard Content</div>}
-          {activeMenu === "withDriver" && <WithDriver />}
-          {activeMenu === "withoutDriver" && <WithoutDriver />}
-          {activeMenu === "payment" && <Payments />}
-          {activeMenu === "vehicles" && <Vehicles />}
+          {activeMenu === "employee" && <Employee setActiveMenu={function (value: string): void {
+            throw new Error("Function not implemented.");
+          } }/>}
+          {activeMenu === "income" && <Income />}
           {activeMenu === "maintenance" && <Maintenance />}
           {activeMenu === "expense" && <Expense />}
         </main>

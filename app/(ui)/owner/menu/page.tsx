@@ -2,11 +2,13 @@
 import {
   Dashboard,
   Employee,
-  Income,
   Expense,
 } from "@/app/sections/menuOwner/menuOwner.section";
+import Income from "@/app/sections/menuOwner/income.section";
 import { useState, useEffect } from "react";
 import Cookie from "js-cookie";
+import Image from "next/image";
+import Logo from "@/assets/images/LogoCarlink_text.png";
 
 export default function OwnerProfile() {
   const [activeMenu, setActiveMenu] = useState("Dashboard");
@@ -48,9 +50,12 @@ export default function OwnerProfile() {
     <div className="pt-2 pb-24 px-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
         {/* Sidebar Menu */}
-        <div className="bg-gray-200 rounded-lg p-4 h-[400px] flex flex-col justify-between">
+        <div className="bg-blue-800 rounded-lg p-4 h-[400px] w-[400px] flex flex-col justify-between">
           {/* Profile Picture and Info */}
           <div>
+            <div className="flex items-center">
+              <Image src={Logo} width={60} height={60} alt="CarLink Logo" />
+            </div>
 
             <ul>
               {/* Dashboard */}

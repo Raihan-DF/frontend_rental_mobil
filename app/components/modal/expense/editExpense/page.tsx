@@ -2,30 +2,21 @@ import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// interface Expense {
-//   id: number;
-//   expenseName: string;
-//   quantity: number;
-//   price: number;
-//   date: string;
-//   isMaintenance: boolean;
-//   maintenanceId?: number | null;
-// }
 interface Expense {
-    id: number;
-    expenseName: string;
-    quantity: number;
-    date: string; // Format: YYYY-MM-DD
-    price: number;
-    total: number;
-    isMaintenance: boolean;
-    maintenanceId?: number | null; // Optional jika tidak maintenance
-  }
+  id: number;
+  expenseName: string;
+  quantity: number;
+  date: string; // Format: YYYY-MM-DD
+  price: number;
+  total: number;
+  isMaintenance: boolean;
+  maintenanceId?: number | null; // Optional jika tidak maintenance
+}
 
 interface EditExpenseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  expense?: Expense; // Opsional agar modal tetap fleksibel
+  expense?: Expense;
   onUpdateExpense: (updatedExpense: Expense) => void;
 }
 
@@ -35,57 +26,108 @@ const EditExpenseModal: React.FC<EditExpenseModalProps> = ({
   expense,
   onUpdateExpense,
 }) => {
-  const [expenseName, setExpenseName] = useState("");
-  const [quantity, setQuantity] = useState(1);
-  const [price, setPrice] = useState<number | "">("");
-  const [date, setDate] = useState("");
-  const [isMaintenance, setIsMaintenance] = useState(false);
-  const [maintenanceId, setMaintenanceId] = useState<number | "">("");
+  const [name, setName] = useState("");
 
-  // Mengisi state dengan data expense saat modal dibuka
+  const [amount, setAmount] = useState<number | "">("");
+  const [date, setDate] = useState("");
+  const [type, setType] = useState("maintenance");
+  const [quantity, setQuantity] = useState(1);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [maintenanceVehicles, setMaintenanceVehicles] = useState([]);
+  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
+
   useEffect(() => {
     if (expense) {
-      setExpenseName(expense.expenseName || "");
-      setQuantity(expense.quantity || 1);
-      setPrice(expense.price || "");
-      setDate(expense.date?.split("T")[0] || ""); // Format YYYY-MM-DD
-      setIsMaintenance(expense.isMaintenance || false);
-      setMaintenanceId(expense.maintenanceId || "");
+      setName(expense.expenseName);
+      setAmount(expense.price);
+      setDate(expense.date);
+      setQuantity(expense.quantity);
+      setType(expense.isMaintenance ? "maintenance" : "other");
+      setSelectedVehicle(
+        expense.maintenanceId ? String(expense.maintenanceId) : null
+      );
     }
   }, [expense]);
 
+  useEffect(() => {
+    const fetchMaintenanceVehicles = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+
+        if (!token) {
+          toast.error("Token is missing!", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+          return;
+        }
+
+        const response = await fetch("/api/expense/maintenance-vehicles", {
+          headers: { AccessToken: token },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch maintenance vehicles");
+        }
+
+        const data = await response.json();
+        setMaintenanceVehicles(data);
+      } catch (error) {
+        console.error("Error fetching maintenance vehicles:", error);
+        toast.error("Error fetching maintenance vehicles", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    };
+
+    if (type === "maintenance") {
+      fetchMaintenanceVehicles();
+    }
+  }, [type]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage("");
 
-    const formattedDate = new Date(date).toISOString();
-
-    if (!expenseName || !price || !quantity || !date) {
-      toast.error("Please fill in all required fields.", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+    if (!name || !amount || !date || !type) {
+      setErrorMessage("All fields are required.");
       return;
     }
 
-    const updatedExpense: Expense = {
-      ...expense!,
-      expenseName,
-      quantity,
-      price: Number(price),
-      date: formattedDate,
-      isMaintenance,
-      maintenanceId: isMaintenance ? Number(maintenanceId) : null,
-    };
+    const formattedDate = new Date(date).toISOString();
 
     try {
-      const token = localStorage.getItem("access_token");
-
-      if (!token) {
-        toast.error("Token is missing!", { position: "top-right", autoClose: 3000 });
+      if (isNaN(Number(amount))) {
+        setErrorMessage("Amount must be a valid number.");
         return;
       }
 
-      // Kirim request ke backend menggunakan fetch
+      const maintenanceId =
+        type === "maintenance" && selectedVehicle
+          ? Number(selectedVehicle)
+          : null;
+
+      const updatedExpense = {
+        id: expense?.id,
+        expenseName: name,
+        quantity: quantity,
+        date: formattedDate,
+        price: amount,
+        isMaintenance: type === "maintenance",
+        maintenanceId: maintenanceId,
+      };
+
+      const token = localStorage.getItem("access_token");
+
+      if (!token) {
+        toast.error("Token is missing!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+
       const response = await fetch(`/api/expense/${expense?.id}`, {
         method: "PATCH",
         headers: {
@@ -97,11 +139,11 @@ const EditExpenseModal: React.FC<EditExpenseModalProps> = ({
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error Response:", errorData);
-        throw new Error("Failed to update expense.");
+        throw new Error(errorData.message || "Failed to update expense");
       }
 
       const data = await response.json();
+
       toast.success("Expense updated successfully!", {
         position: "top-right",
         autoClose: 3000,
@@ -111,6 +153,7 @@ const EditExpenseModal: React.FC<EditExpenseModalProps> = ({
       onClose();
     } catch (error) {
       console.error("Error updating expense:", error);
+      setErrorMessage("An error occurred. Please try again.");
       toast.error("An error occurred. Please try again.", {
         position: "top-right",
         autoClose: 3000,
@@ -126,66 +169,77 @@ const EditExpenseModal: React.FC<EditExpenseModalProps> = ({
       <div className="rounded-lg bg-white p-8 shadow-lg max-w-3xl w-full">
         <h3 className="text-lg font-bold mb-4">Edit Expense</h3>
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
-          <div>
-            <input
-              type="text"
-              value={expenseName}
-              onChange={(e) => setExpenseName(e.target.value)}
-              placeholder="Expense Name"
-              className="w-full rounded-lg border-gray-200 p-3 text-sm"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              placeholder="Quantity"
-              className="w-full rounded-lg border-gray-200 p-3 text-sm"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              placeholder="Price (in Rupiah)"
-              className="w-full rounded-lg border-gray-200 p-3 text-sm"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg border-gray-200 p-3 text-sm"
-              required
-            />
-          </div>
-          <div>
+          <input
+            id="expense-name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Expense Name"
+            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+            required
+          />
+          <input
+            id="quantity"
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            placeholder="quantity (in Rupiah)"
+            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+            required
+          />
+          <input
+            id="amount"
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
+            placeholder="Amount (in Rupiah)"
+            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+            required
+          />
+          <input
+            id="date"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+            required
+          />
+          <select
+            id="type"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+            required
+          >
+            <option value="maintenance">Maintenance</option>
+            <option value="other">Other</option>
+          </select>
+
+          {type === "maintenance" && (
             <select
-              value={isMaintenance ? "maintenance" : "other"}
-              onChange={(e) => setIsMaintenance(e.target.value === "maintenance")}
-              className="w-full rounded-lg border-gray-200 p-3 text-sm"
+              id="maintenance-vehicle"
+              value={selectedVehicle || ""}
+              onChange={(e) => setSelectedVehicle(e.target.value)}
+              className="w-full rounded-lg border-gray-200 p-3 text-sm col-span-2"
+              required
             >
-              <option value="other">Other</option>
-              <option value="maintenance">Maintenance</option>
+              <option value="" disabled>
+                Select Vehicle (Name + License Plate)
+              </option>
+              {maintenanceVehicles.map((vehicle: any) => (
+                <option key={vehicle.id} value={vehicle.id}>
+                  {vehicle.name} - {vehicle.licensePlate}
+                </option>
+              ))}
             </select>
-          </div>
-          {isMaintenance && (
-            <div>
-              <input
-                type="number"
-                value={maintenanceId}
-                onChange={(e) => setMaintenanceId(Number(e.target.value))}
-                placeholder="Maintenance ID"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm"
-              />
-            </div>
           )}
+
+          {errorMessage && (
+            <p className="text-red-500 text-sm col-span-2 mb-4">
+              {errorMessage}
+            </p>
+          )}
+
           <div className="col-span-2 flex justify-end">
             <button
               type="button"
@@ -196,9 +250,9 @@ const EditExpenseModal: React.FC<EditExpenseModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg"
             >
-              Update Expense
+              Confirm
             </button>
           </div>
         </form>

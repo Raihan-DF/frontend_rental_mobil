@@ -42,6 +42,35 @@ export default function VehiclesGeneral() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedTransmission, setSelectedTransmission] = useState<string[]>(
+    []
+  );
+  const [selectedPrice, setSelectedPrice] = useState([500000, 1000000000]);
+  const [selectedType, setSelectedType] = useState<string[]>([]);
+
+  const handleTransmissionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setSelectedTransmission((prev) => [...prev, value]);
+    } else {
+      setSelectedTransmission((prev) => prev.filter((val) => val !== value));
+    }
+  };
+
+  const handleTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setSelectedType((prev) => [...prev, value]);
+    } else {
+      setSelectedType((prev) => prev.filter((val) => val !== value));
+    }
+  };
+
+  const resetFilters = () => {
+    setSelectedTransmission([]);
+    setSelectedPrice([500000, 1000000000]);
+    setSelectedType([]);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,73 +121,171 @@ export default function VehiclesGeneral() {
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <header className="mt-10">
+        <header className="mt-10 mb-28">
           <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
             Vehicles
           </h2>
-
-          {/* Form Pencarian */}
-          <div className="mt-6 p-6 border border-gray-200 rounded-lg bg-gray-50">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">
-                  Pick Up Location
-                </h3>
-                <input
-                  type="text"
-                  value={pickUpLocation ?? ""}
-                  onChange={(e) => setPickUpLocation(e.target.value)}
-                  className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg"
-                  placeholder="Contoh: Stasiun Tugu Yogyakarta"
-                  required
-                />
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">
-                  Pick Up Date
-                </h3>
-                <input
-                  type="date"
-                  value={pickUpDate ?? ""}
-                  onChange={(e) => setPickUpDate(e.target.value)}
-                  className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg"
-                  required
-                />
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">Duration</h3>
-                <input
-                  type="number"
-                  value={duration ?? ""}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg"
-                  placeholder="Contoh: 1 day"
-                  required
-                />
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">
-                  Pick Up Time
-                </h3>
-                <input
-                  type="time"
-                  value={pickUpTime ?? ""}
-                  onChange={(e) => setPickUpTime(e.target.value)}
-                  className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg"
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end items-center col-span-1 sm:col-span-3 mt-4">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
+            <div className="h-32 rounded-lg bg-gray-200">
+              <div className="lg:col-span-1 h-auto rounded-lg bg-gray-200 p-4">
+                {/* Filter Sidebar */}
+                <h3 className="text-lg font-semibold mb-4">Filter</h3>
                 <button
-                  onClick={handleSubmit}
-                  className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                  onClick={resetFilters}
+                  className="text-sm text-blue-600 hover:text-blue-800 mb-4"
                 >
-                  Search
+                  Reset Filters
                 </button>
+
+                {/* Transmission Filter */}
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-600">Transmission</h4>
+                  <div className="flex flex-col">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        value="Automatic"
+                        checked={selectedTransmission.includes("Automatic")}
+                        onChange={handleTransmissionChange}
+                        className="mr-2"
+                      />
+                      Automatic
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        value="Manual"
+                        checked={selectedTransmission.includes("Manual")}
+                        onChange={handleTransmissionChange}
+                        className="mr-2"
+                      />
+                      Manual
+                    </label>
+                  </div>
+                </div>
+
+                {/* Price Filter */}
+                <div className="mb-4">
+                  <h4 className="font-medium text-gray-600">Price per Day</h4>
+                  <div className="flex flex-col">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        value="500000-1000000000"
+                        checked={selectedPrice[0] === 500000}
+                        onChange={() => setSelectedPrice([500000, 1000000000])}
+                        className="mr-2"
+                      />
+                      Rp 500,000 - Rp 1,000,000,000
+                    </label>
+                  </div>
+                </div>
+
+                {/* Vehicle Type Filter */}
+                <div>
+                  <h4 className="font-medium text-gray-600">Vehicle Type</h4>
+                  <div className="flex flex-col">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        value="Minivan"
+                        checked={selectedType.includes("Minivan")}
+                        onChange={handleTypeChange}
+                        className="mr-2"
+                      />
+                      Minivan
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        value="SUV"
+                        checked={selectedType.includes("SUV")}
+                        onChange={handleTypeChange}
+                        className="mr-2"
+                      />
+                      SUV
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        value="MPV"
+                        checked={selectedType.includes("MPV")}
+                        onChange={handleTypeChange}
+                        className="mr-2"
+                      />
+                      MPV
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="h-auto rounded-lg bg-gray-200 lg:col-span-2">
+              {/* Form Pencarian */}
+              <div className="p-6 border border-gray-200 rounded-lg bg-gray-50">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-600">
+                      Pick Up Location
+                    </h3>
+                    <input
+                      type="text"
+                      value={pickUpLocation ?? ""}
+                      onChange={(e) => setPickUpLocation(e.target.value)}
+                      className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg"
+                      placeholder="Contoh: Stasiun Tugu Yogyakarta"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-600">
+                      Pick Up Date
+                    </h3>
+                    <input
+                      type="date"
+                      value={pickUpDate ?? ""}
+                      onChange={(e) => setPickUpDate(e.target.value)}
+                      className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-600">
+                      Duration
+                    </h3>
+                    <input
+                      type="number"
+                      value={duration ?? ""}
+                      onChange={(e) => setDuration(e.target.value)}
+                      className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg"
+                      placeholder="Contoh: 1 day"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-600">
+                      Pick Up Time
+                    </h3>
+                    <input
+                      type="time"
+                      value={pickUpTime ?? ""}
+                      onChange={(e) => setPickUpTime(e.target.value)}
+                      className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex justify-end items-center col-span-1 sm:col-span-3 mt-4">
+                    <button
+                      onClick={handleSubmit}
+                      className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                    >
+                      Search
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

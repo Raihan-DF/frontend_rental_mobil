@@ -1,9 +1,10 @@
 "use client";
 import {
   MyProfile,
-  MyOrder,
+  // MyOrder,
   Dashboard,
 } from "@/app/sections/profile/menu.section";
+import {MyOrder} from  "@/app/sections/profile/myOrder.section";
 import { useState, useEffect } from "react";
 import Cookie from "js-cookie";
 import { parseAsString, useQueryState } from "nuqs";
