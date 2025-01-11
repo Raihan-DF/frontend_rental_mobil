@@ -153,22 +153,40 @@ export default function Expenses() {
   const generatePDF = async () => {
     if (!tableRef.current) return;
 
-    const canvas = await html2canvas(tableRef.current, {
-      scale: 2,
-      useCORS: true,
-    });
-
-    const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
+    // Tambahkan header ke PDF
+    const pdfWidth = pdf.internal.pageSize.getWidth();
     pdf.setFontSize(18);
     pdf.text("Expenses Report", pdfWidth / 2, 10, { align: "center" });
     pdf.setFontSize(12);
     pdf.text("Generated on: " + new Date().toLocaleDateString(), 10, 20);
 
-    pdf.addImage(imgData, "PNG", 0, 30, pdfWidth, pdfHeight);
+    // Render tabel ke PDF
+    const canvasTable = await html2canvas(tableRef.current, {
+      scale: 2,
+      useCORS: true,
+    });
+    const imgTable = canvasTable.toDataURL("image/png");
+    const tableHeight = (canvasTable.height * pdfWidth) / canvasTable.width;
+    pdf.addImage(imgTable, "PNG", 0, 30, pdfWidth, tableHeight);
+
+    // Render chart ke PDF
+    const chartCanvas = document.querySelector("canvas") as HTMLCanvasElement;
+    if (chartCanvas) {
+      const chartImage = chartCanvas.toDataURL("image/png");
+      pdf.addPage(); // Tambahkan halaman baru untuk chart
+      pdf.addImage(
+        chartImage,
+        "PNG",
+        10,
+        10,
+        pdfWidth - 20,
+        (chartCanvas.height * (pdfWidth - 20)) / chartCanvas.width
+      );
+    }
+
+    // Simpan PDF
     pdf.save("expenses-report.pdf");
   };
 

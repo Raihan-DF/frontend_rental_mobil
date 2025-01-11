@@ -109,25 +109,25 @@ export default function Bookings() {
             <TableHeader>
               <TableRow>
                 <TableHead>Vehicle</TableHead>
-                <TableHead>Customer</TableHead>
+                {/* <TableHead>Customer</TableHead> */}
                 <TableHead>Pickup Location</TableHead>
                 <TableHead>Pickup DateTime</TableHead>
                 <TableHead>Duration</TableHead>
-                <TableHead>Status</TableHead>
+                {/* <TableHead>Status</TableHead> */}
                 <TableHead>Driver</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="">Actions</TableHead>
               </TableRow>
             </TableHeader>
             {bookingsWithDriver.map((booking) => (
               <TableRow key={booking.id}>
                 <TableCell>{booking.vehicleName}</TableCell>
-                <TableCell>{booking.userName}</TableCell>
+                {/* <TableCell>{booking.userName}</TableCell> */}
                 <TableCell>{booking.pickupLocation}</TableCell>
                 <TableCell>
                   {new Date(booking.pickupDateTime).toLocaleString()}
                 </TableCell>
                 <TableCell>{booking.duration} Day</TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <Badge
                     className={`text-xs ${
                       booking.status === "Booked"
@@ -137,9 +137,9 @@ export default function Bookings() {
                   >
                     {booking.status}
                   </Badge>
-                </TableCell>
+                </TableCell> */}
                 <TableCell>{booking.driverName || "N/A"}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-center">
                   <Icon
                     icon="mdi:dots-vertical"
                     className="cursor-pointer"

@@ -4,6 +4,11 @@ import Image from "next/image";
 import Logo from "../../../assets/images/logofix.png";
 import { usePathname } from "next/navigation";
 import Cookie from "js-cookie";
+import axios from "axios";
+
+interface profile {
+  image: string;
+}
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false); // Tambahkan state untuk mobile menu
@@ -13,6 +18,8 @@ export function Navbar() {
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen); // Toggle mobile menu
   const currentPath = usePathname();
+
+  const [profilImgSrc, setProfilImgSrc] = useState<string | null>(null);
 
   const checkRoutes = () => {
     if (
@@ -75,6 +82,48 @@ export function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      // try {
+        const token = localStorage.getItem("access_token");
+        if (!token) throw new Error("User not authenticated");
+
+        const response = await axios.get("/api/auth/user-profile", {
+          headers: {
+            accessToken: token,
+          },
+        });
+
+        const result = response.data;
+        console.log(result);
+
+        const res = await fetch(
+          `http://localhost:5000/file/get?filename=${result.image}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+
+        const imageData = await res.blob();
+
+        const objectURL = URL.createObjectURL(imageData);
+        setProfilImgSrc(objectURL);
+        // } else {
+        //   throw new Error('Belum ada profile!');
+        // }
+      // } catch (error: any) {
+      //   setErrorMessage(error.message || "Unable to fetch profile data");
+      // } finally {
+      //   setIsLoading(false);
+      // }
+    };
+
+    fetchProfile();
+  }, []);
+
   return (
     <div>
       <header
@@ -120,16 +169,6 @@ export function Navbar() {
                       Vehicles
                     </a>
                   </li>
-                  {/* <li>
-                    <a
-                      className={`transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1 ${
-                        isScrolled ? "text-black" : "text-black"
-                      } hover:text-green-500`}
-                      href="/general/booking"
-                    >
-                      Booking
-                    </a>
-                  </li> */}
                   <li>
                     <a
                       className={`transition focus:bg-gray-200 active:bg-green-500 rounded-md px-2 py-1 ${
@@ -150,20 +189,13 @@ export function Navbar() {
                   href="/customer/profile"
                   className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-300"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-gray-700"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 12c2.28 0 4-1.72 4-4s-1.72-4-4-4-4 1.72-4 4 1.72 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                    />
-                  </svg>
+                  <Image
+                    alt="Profile"
+                    src={profilImgSrc || "/default-profile.png"} // Use a default profile image if the src is null
+                    className="w-10 h-10 rounded-full object-cover"
+                    width={40} // Width of the image
+                    height={40} // Height of the image
+                  />
                 </a>
               ) : (
                 <div className="hidden sm:flex sm:gap-4">
@@ -273,3 +305,10 @@ export function Navbar() {
     </div>
   );
 }
+// function setErrorMessage(arg0: any) {
+//   throw new Error("Function not implemented.");
+// }
+
+// function setIsLoading(arg0: boolean) {
+//   throw new Error("Function not implemented.");
+// }

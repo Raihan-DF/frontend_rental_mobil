@@ -10,7 +10,7 @@ interface Booking {
   pickupDateTime: string;
   duration: number;
   payment: {
-    status: "PENDING" | "In Booking";
+    status: "PENDING" | "In Booking" | "Invalid" | "Telat Bayar";
   };
 }
 
@@ -152,6 +152,10 @@ function BookingOrder() {
                             ? "text-yellow-600"
                             : booking.payment.status === "In Booking"
                             ? "text-green-600"
+                            : booking.payment.status === "Invalid"
+                            ? "text-red-600"
+                            : booking.payment.status === "Telat Bayar"
+                            ? "text-red-600"
                             : ""
                         }`}
                       >
@@ -160,12 +164,14 @@ function BookingOrder() {
                     </div>
                   </dl>
 
-                  <button
-                    className="mt-4 w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
-                    onClick={() => handleCancelClick(booking.id)}
-                  >
-                    Cancel Booking
-                  </button>
+                  {booking.payment.status === "In Booking" && (
+                    <button
+                      className="mt-4 w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+                      onClick={() => handleCancelClick(booking.id)}
+                    >
+                      Cancel Booking
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

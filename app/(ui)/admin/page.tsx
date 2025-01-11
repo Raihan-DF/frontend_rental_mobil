@@ -37,6 +37,8 @@ import WithDriver from "@/app/(ui)/admin/components/features/bookingWithdriver";
 import Payments from "@/app/(ui)/admin/components/features/payment";
 import Expense from "@/app/(ui)/admin/components/features/expense";
 import Maintenance from "@/app/(ui)/admin/components/features/maintenance";
+import DashboardAdmin from "@/app/(ui)/admin/components/features/dashboard";
+import Refund from "@/app/(ui)/admin/components/features/Refund";
 
 export default function Dashboard() {
   const [activeMenu, setActiveMenu] = useState<string>("");
@@ -140,7 +142,7 @@ export default function Dashboard() {
               onClick={() => handleMenuClick("driver")}
             >
               <Users className="h-4 w-4" />
-              Driver Assignment
+              Refund
             </Link>
             {/* Maintenance */}
             <Link
@@ -228,13 +230,14 @@ export default function Dashboard() {
         </header>
 
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          {activeMenu === "dashboard" && <div>Dashboard Content</div>}
+          {activeMenu === "dashboard" && <DashboardAdmin/>}
           {activeMenu === "withDriver" && <WithDriver />}
           {activeMenu === "withoutDriver" && <WithoutDriver />}
           {activeMenu === "payment" && <Payments />}
           {activeMenu === "vehicles" && <Vehicles />}
           {activeMenu === "maintenance" && <Maintenance />}
           {activeMenu === "expense" && <Expense />}
+          {activeMenu === "driver" && <Refund />}
         </main>
       </div>
     </div>

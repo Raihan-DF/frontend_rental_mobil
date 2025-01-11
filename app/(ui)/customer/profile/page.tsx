@@ -4,16 +4,26 @@ import {
   // MyOrder,
   Dashboard,
 } from "@/app/sections/profile/menu.section";
-import {MyOrder} from  "@/app/sections/profile/myOrder.section";
+import { MyOrder } from "@/app/sections/profile/myOrder.section";
 import { useState, useEffect } from "react";
 import Cookie from "js-cookie";
 import { parseAsString, useQueryState } from "nuqs";
+import axios from "axios";
+import Image from "next/image";
+
+interface profile {
+  image: string;
+}
 
 export default function Profile() {
-  const [activeMenu, setActiveMenu] = useQueryState("page",parseAsString.withDefault('General'));
+  const [activeMenu, setActiveMenu] = useQueryState(
+    "page",
+    parseAsString.withDefault("General")
+  );
   const [profile, setProfile] = useState({ name: "" });
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [profilImgSrc, setProfilImgSrc] = useState<string | null>(null);
 
   useEffect(() => {
     // Ambil username dan email dari localStorage
@@ -28,6 +38,49 @@ export default function Profile() {
       setErrorMessage("Profile tidak ditemukan");
     }
     setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        if (!token) throw new Error("User not authenticated");
+
+        const response = await axios.get("/api/auth/user-profile", {
+          headers: {
+            accessToken: token,
+          },
+        });
+
+        const result = response.data;
+        console.log(result);
+        setProfile(result);
+
+        const res = await fetch(
+          `http://localhost:5000/file/get?filename=${result.image}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+
+        const imageData = await res.blob();
+
+        const objectURL = URL.createObjectURL(imageData);
+        setProfilImgSrc(objectURL);
+        // } else {
+        //   throw new Error('Belum ada profile!');
+        // }
+      } catch (error: any) {
+        setErrorMessage(error.message || "Unable to fetch profile data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   // Function to render the selected component
@@ -54,20 +107,13 @@ export default function Profile() {
             <div className="flex flex-col items-center mb-6">
               {/* Profile Picture with Icon */}
               <div className="relative w-24 h-24 rounded-full overflow-hidden mb-4 bg-gray-400 flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-16 w-16 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 14c-3.866 0-7 3.134-7 7h14c0-3.866-3.134-7-7-7zM12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"
-                  />
-                </svg>
+                <Image
+                  alt="Profile"
+                  src={profilImgSrc || ""}
+                  className="w-32 h-32 rounded-full object-cover mx-auto"
+                  width={200}
+                  height={200}
+                />
               </div>
 
               {/* Username and Email */}

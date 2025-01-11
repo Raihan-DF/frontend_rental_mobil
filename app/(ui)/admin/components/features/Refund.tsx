@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/app/(ui)/admin/components/ui/table";
 import { Icon } from "@iconify/react";
-import VerifyPaymentModal from "@/app/components/modal/paymentConfirmation/page";
+import VerifyPaymentModal from "@/app/components/modal/refundConfirmation/page";
 
 // Definisikan tipe untuk payment
 interface Payment {
@@ -30,7 +30,7 @@ interface Payment {
   status: string;
 }
 
-export default function Payments() {
+export default function Refund() {
   const [payments, setPayments] = useState<Payment[]>([]); // State untuk data pembayaran
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null); // Untuk modal konfirmasi
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,24 +38,31 @@ export default function Payments() {
   // Ambil data pembayaran dari API menggunakan fetch
   useEffect(() => {
     const fetchPayments = async () => {
-      try {
-        const token = localStorage.getItem("access_token"); // Ambil token dari localStorage
-        const response = await fetch("api/payments", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            AccessToken: token || "", // Menambahkan token ke dalam header
-          },
-        });
-
-        if (!response.ok) throw new Error("Error fetching payments data");
-
-        const data = await response.json();
-        setPayments(data); // Set data pembayaran ke state
-      } catch (error) {
-        console.error("Error fetching payments:", error);
-      }
-    };
+        try {
+          const token = localStorage.getItem("access_token");
+          const response = await fetch("api/payments", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              AccessToken: token || "",
+            },
+          });
+      
+          if (!response.ok) throw new Error("Error fetching payments data");
+      
+          const data = await response.json();
+      
+          // Filter hanya pembayaran dengan status "Pending request refund" atau "Success Refund"
+          const filteredPayments = data.filter(
+            (payment: Payment) =>
+              payment.status === "Pending request refund" || payment.status === "Success Refund"
+          );
+          setPayments(filteredPayments); // Set data pembayaran terfilter ke state
+        } catch (error) {
+          console.error("Error fetching payments:", error);
+        }
+      };
+      
 
     fetchPayments(); // Memanggil fetchPayments saat komponen dimuat
   }, []);
@@ -67,13 +74,13 @@ export default function Payments() {
   };
 
   // Fungsi untuk menangani verifikasi pembayaran
-  const handleVerify = async (status: "In Booking" | "Invalid") => {
+  const handleVerify = async (status: "Success Refund" | "Invalid") => {
     if (!selectedPayment) return;
 
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(
-        `api/payments/verify/${selectedPayment.id}`,
+        `api/payments/verifRefund/${selectedPayment.id}`,
         {
           method: "PATCH",
           headers: {
@@ -104,8 +111,8 @@ export default function Payments() {
     <>
       <Card>
         <CardHeader className="px-7 relative">
-          <CardTitle>Payments</CardTitle>
-          <CardDescription>List of payments made by customers.</CardDescription>
+          <CardTitle>Refund</CardTitle>
+          <CardDescription>List of request Refund.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -138,10 +145,10 @@ export default function Payments() {
                   <TableCell className="flex justify-center items-center">
                     <Badge
                       className={`flex justify-center items-center text-xs ${
-                        payment.status === "Completed"
+                        payment.status === "Success Refund"
                           ? "bg-green-500 text-white"
-                          : payment.status === "In Booking"
-                          ? "bg-blue-500 text-white"
+                          : payment.status === "Pending request refund"
+                          ? "bg-yellow-500 text-white"
                           : "bg-red-500 text-white"
                       }`}
                       variant={
@@ -150,7 +157,7 @@ export default function Payments() {
                     >
                       {payment.status}
                     </Badge>
-                  </TableCell >
+                  </TableCell>
                   <TableCell className="text-center">
                     <button
                       className="mr-2 px-2 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"

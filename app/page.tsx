@@ -16,6 +16,7 @@ import layananPelanggan from "@/assets/images/layananPelanggan.png";
 import hargaKompetitif from "@/assets/images/hargaKompetitif.png";
 import hematWaktu from "@/assets/images/hematWaktu.png";
 import perawatanKendaraan from "@/assets/images/perawatanKendaraan.png";
+import Background2 from "@/assets/images/background2.png";
 
 import { Card, CardContent } from "@/app/(ui)/admin/components/ui/card";
 import {
@@ -101,7 +102,7 @@ export default function Home() {
       <div className="relative w-full h-auto">
         {/* Gambar sebagai background */}
         <Image
-          src={Background}
+          src={Background2}
           layout="responsive"
           width={1920}
           height={1080}
@@ -111,81 +112,13 @@ export default function Home() {
 
         {/* Konten di atas background */}
         <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-between items-center px-2 gap-4 py-16">
-          {/* Konten bagian atas */}
-          <div className="flex w-full items-start justify-center px-2 gap-4">
-            {/* Teks di kiri */}
-            <div className="flex flex-col text-white space-y-2 py-36">
-              <h1 className="text-8xl font-bold">RENT</h1>
-              <h1 className="text-8xl font-bold">CARS</h1>
-              <p className="text-6xl">Solution for</p>
-              <p className="text-6xl">Your Trip</p>
-            </div>
-
-            {/* Gambar utama di tengah */}
-            <div className="flex flex-col items-center mx-2">
-              <Image
-                src={mobilCatalog}
-                width={800}
-                height={350}
-                objectFit="contain"
-                alt="Gambar mobil"
-              />
-            </div>
-
-            {/* Gambar kecil di kanan */}
-            <div className="flex flex-col space-y-8 py-36">
-              {/* Gambar kecil atas */}
-              <Image
-                src={interiorFortunter1}
-                width={250}
-                height={100}
-                objectFit="cover"
-                alt="Gambar kecil 1"
-                className="rounded-md"
-              />
-              {/* Gambar kecil bawah */}
-              <Image
-                src={interiorFortunter2}
-                width={250}
-                height={100}
-                objectFit="cover"
-                alt="Gambar kecil 2"
-                className="rounded-md"
-              />
-            </div>
-          </div>
-
-          {/* Konten di atas background */}
-          {/* Pilihan Driver dan No Driver */}
-          {/* <div className="flex space-x-4 mb-4">
-            <button
-              className={`px-6 py-2 rounded-md font-medium border text-sm ${
-                selectedOption === "driver"
-                  ? "bg-blue-800 text-white"
-                  : "bg-white text-blue-700"
-              }`}
-              onClick={() => setSelectedOption("driver")}
-            >
-              With Driver
-            </button>
-            <button
-              className={`px-6 py-2 rounded-md font-medium border text-sm ${
-                selectedOption === "no-driver"
-                  ? "bg-blue-800 text-white"
-                  : "bg-white text-blue-700"
-              }`}
-              onClick={() => setSelectedOption("no-driver")}
-            >
-              No Driver
-            </button>
-          </div> */}
 
           {/* Inputan bagian bawah */}
-          <div className="bg-white w-5/6 rounded-lg shadow-lg p-2 flex flex-col items-center">
+          {/* <div className="bg-white w-5/6 rounded-lg shadow-lg p-2 flex flex-col items-center"> */}
             {/* Form Input */}
-            <div className="flex flex-wrap gap-4 items-center justify-center">
+            {/* <div className="flex flex-wrap gap-4 items-center justify-center"> */}
               {/* Pickup Location */}
-              <div className="flex flex-col">
+              {/* <div className="flex flex-col">
                 <label className="text-gray-700 font-medium mb-1">
                   Pickup Location
                 </label>
@@ -194,21 +127,21 @@ export default function Home() {
                   placeholder="Enter location"
                   className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
+              </div> */}
 
               {/* Pickup Date */}
-              <div className="flex flex-col">
+              {/* <div className="flex flex-col">
                 <label className="text-gray-700 font-medium mb-1">
                   Pickup Date
                 </label>
                 <input
                   type="date"
                   className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                /> */}
               </div>
 
               {/* Duration */}
-              <div className="flex flex-col">
+              {/* <div className="flex flex-col">
                 <label className="text-gray-700 font-medium mb-1">
                   Duration
                 </label>
@@ -217,10 +150,10 @@ export default function Home() {
                   placeholder="In days"
                   className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
+              </div> */}
 
               {/* Pickup Time */}
-              <div className="flex flex-col">
+              {/* <div className="flex flex-col">
                 <label className="text-gray-700 font-medium mb-1">
                   Pickup Time
                 </label>
@@ -228,15 +161,15 @@ export default function Home() {
                   type="time"
                   className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
+              </div> */}
 
               {/* Button Search */}
-              <button className="bg-blue-800 text-white font-bold px-6 py-2 rounded-md hover:bg-blue-900 transition">
+              {/* <button className="bg-blue-800 text-white font-bold px-6 py-2 rounded-md hover:bg-blue-900 transition">
                 Search
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 */}

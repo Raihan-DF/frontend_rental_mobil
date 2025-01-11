@@ -51,15 +51,6 @@ function MyProfile() {
 
         const result = response.data;
         console.log(result);
-
-        // if (response.ok) {
-        //   const data = await response.json();
-        //   setProfile({
-        //     name: data.name,
-        //     address: data.address,
-        //     phone: data.phone,
-        //     image: data.image, // Set image from response
-        //   });
         setProfile(result);
 
         const res = await fetch(
@@ -135,19 +126,6 @@ function MyProfile() {
         formData.append("image", profil_gambar);
       }
 
-      // const response = await fetch('/api/auth/update-profile', {
-      //   method: 'POST',
-      //   headers: {
-      //     'accessToken': `${token}`,
-      //   },
-      //   body: JSON.stringify({
-      //     "name": profile.name,
-      //     "address": profile.address,
-      //     "phone": profile.phone,
-      //     "image": profil_gambar
-      //   }), // Send as FormData to handle file upload
-      // });
-
       const payload = {
         name: profile.name,
         address: profile.address,
@@ -164,10 +142,6 @@ function MyProfile() {
       // const result = await response.json();
       const result = response.data;
       console.log(result);
-
-      // if (!response.ok) {
-      //   throw new Error('Gagal update profile');
-      // }
 
       setIsEditable(false);
       setErrorMessage("");

@@ -179,7 +179,7 @@ export default function Vehicles() {
                       vehicle.status === "ready" ? "secondary" : "outline"
                     }
                   >
-                    {vehicle.status === "ready" ? "Ready" : "Booked"}
+                    {vehicle.status === "ready" ? "Ready" : "in_maintenance"}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">

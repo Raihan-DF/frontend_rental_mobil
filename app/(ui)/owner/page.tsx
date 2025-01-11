@@ -35,6 +35,7 @@ import Income from "@/app/(ui)/owner/components/features/income";
 import Expense from "@/app/(ui)/owner/components/features/expense";
 import Maintenance from "@/app/(ui)/owner/components/features/maintenance";
 import Employee from "@/app/(ui)/owner/components/features/employee";
+import DashboardOwner from "@/app/(ui)/owner/components/features/dashboard";
 
 export default function Dashboard() {
   const [activeMenu, setActiveMenu] = useState<string>("");
@@ -186,7 +187,7 @@ export default function Dashboard() {
         </header>
 
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          {activeMenu === "dashboard" && <div>Dashboard Content</div>}
+          {activeMenu === "dashboard" && <DashboardOwner/>}
           {activeMenu === "employee" && <Employee setActiveMenu={function (value: string): void {
             throw new Error("Function not implemented.");
           } }/>}

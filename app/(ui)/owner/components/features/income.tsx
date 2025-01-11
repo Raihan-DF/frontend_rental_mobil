@@ -1,3 +1,4 @@
+"use client";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -6,13 +7,15 @@ import {
   Title,
   Tooltip,
   Legend,
+  LineElement,
+  PointElement,
   ArcElement,
 } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
-import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/app/(ui)/admin/components/ui/card";
@@ -24,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/(ui)/admin/components/ui/table";
+import { useEffect, useState, useRef } from "react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
@@ -31,14 +35,16 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  LineElement,
+  PointElement,
   ArcElement,
   Title,
   Tooltip,
   Legend
 );
 
-interface IncomeData {
-  tanggal: string;
+interface Income {
+  tanggal: string; // Format: YYYY-MM-DD
   namaPelanggan: string;
   jenisKendaraan: string;
   platNomor: string;
@@ -53,156 +59,156 @@ interface ChartData {
   labels: string[];
   datasets: {
     label: string;
-    data: number[];
+    data: number[] | number[];
     backgroundColor: string | string[];
-    borderColor: string;
+    borderColor: string | string[];
     borderWidth: number;
   }[];
 }
 
-const Income: React.FC = () => {
-  const [incomes, setIncomes] = useState<IncomeData[]>([]);
-  const [search, setSearch] = useState<string>("");
+export default function Income() {
   const [selectedMonth, setSelectedMonth] = useState<string>("");
-  const tableRef = useRef<HTMLDivElement>(null);
+  const [incomeData, setIncomeData] = useState<Income[]>([]);
+  const [filteredIncome, setFilteredIncome] = useState<Income[]>([]);
   const [chartData, setChartData] = useState<ChartData>({
     labels: [],
     datasets: [],
   });
-  const [doughnutChartData, setDoughnutChartData] = useState<ChartData>({
+  const [paymentMethodData, setPaymentMethodData] = useState<ChartData>({
     labels: [],
-    datasets: [],
+    datasets: [
+      {
+        label: "Payment Methods",
+        data: [],
+        backgroundColor: [],
+        borderColor: [],
+        borderWidth: 1,
+      },
+    ],
   });
+  const tableRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch("/api/payments/income-report", {
-      headers: {
-        AccessToken: localStorage.getItem("AccessToken") || "", // Token autentikasi
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setIncomes(data);
-        } else {
-          console.error("Data income tidak valid:", data);
-          setIncomes([]);
-        }
-      })
-      .catch((error) => {
+    const fetchIncome = async () => {
+      try {
+        const response = await fetch("/api/payments/income-report", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) throw new Error("Error fetching income data");
+
+        const data: Income[] = await response.json();
+        setIncomeData(data);
+        setFilteredIncome(data);
+        generateChartData(data);
+        generatePaymentMethodChart(data);
+      } catch (error) {
         console.error("Error fetching income data:", error);
-        setIncomes([]);
-      });
+      }
+    };
+
+    fetchIncome();
   }, []);
 
-  // Filter berdasarkan bulan dan nama pelanggan
-  const filteredIncomes = incomes.filter((income) => {
-    if (!selectedMonth) return true;
-
-    const incomeDate = new Date(income.tanggal);
-    const selectedDate = new Date(selectedMonth);
-
-    return (
-      incomeDate.getFullYear() === selectedDate.getFullYear() &&
-      incomeDate.getMonth() === selectedDate.getMonth()
+  const generateChartData = (data: Income[]) => {
+    const totalPendapatan = data.map((income) =>
+      parseInt(income.totalPendapatan.replace(/[^0-9]/g, ""))
     );
-  });
 
-  const searchFilteredIncomes = filteredIncomes.filter((income) =>
-    income.namaPelanggan.toLowerCase().includes(search.toLowerCase())
-  );
+    const labels = data.map((income) => income.tanggal);
 
-  useEffect(() => {
-    // Menghitung pendapatan berdasarkan tanggal untuk chart Bar
-    const dailyIncome = filteredIncomes.reduce((acc, income) => {
-      const incomeDate = new Date(income.tanggal);
-      const formattedDate = incomeDate.toISOString().split("T")[0]; // Format YYYY-MM-DD untuk tanggal
-
-      const amount = parseFloat(
-        income.totalPendapatan.replace("Rp", "").replace(",", "")
-      );
-      acc[formattedDate] = acc[formattedDate]
-        ? acc[formattedDate] + amount
-        : amount;
-      return acc;
-    }, {} as Record<string, number>);
-
-    // Persiapkan data untuk chart Bar (Pendapatan Berdasarkan Tanggal)
     setChartData({
-      labels: Object.keys(dailyIncome), // Tanggal sebagai label
+      labels,
       datasets: [
         {
-          label: "Pendapatan Berdasarkan Tanggal",
-          data: Object.values(dailyIncome), // Pendapatan per tanggal
-          backgroundColor: "#36A2EB",
-          borderColor: "#fff",
+          label: "Total Pendapatan",
+          data: totalPendapatan,
+          backgroundColor: "rgba(54, 162, 235, 0.6)",
+          borderColor: "rgba(54, 162, 235, 1)",
           borderWidth: 1,
         },
       ],
     });
+  };
 
-    // Menghitung pendapatan berdasarkan metode pembayaran untuk chart Doughnut
-    const paymentMethods = filteredIncomes.reduce((acc, income) => {
-      const method = income.metodePembayaran;
-      const amount = parseFloat(
-        income.totalPendapatan.replace("Rp", "").replace(",", "")
-      );
-      acc[method] = acc[method] ? acc[method] + amount : amount;
-      return acc;
-    }, {} as Record<string, number>);
+  const generatePaymentMethodChart = (data: Income[]) => {
+    const paymentMethods = data.map((income) => income.metodePembayaran);
+    const paymentMethodCount = paymentMethods.reduce(
+      (acc: any, method: string) => {
+        acc[method] = (acc[method] || 0) + 1;
+        return acc;
+      },
+      {}
+    );
 
-    // Persiapkan data untuk chart Doughnut
-    setDoughnutChartData({
-      labels: Object.keys(paymentMethods),
+    const labels = Object.keys(paymentMethodCount);
+    const dataValues = Object.values(paymentMethodCount) as number[];
+
+    // Alternating blue and red colors
+    const backgroundColors = labels.map((_, index) =>
+      index % 2 === 0 ? "rgba(54, 162, 235, 0.6)" : "rgba(255, 99, 132, 0.6)"
+    );
+
+    setPaymentMethodData({
+      labels,
       datasets: [
         {
-          label: "Pendapatan Berdasarkan Metode Pembayaran",
-          data: Object.values(paymentMethods),
-          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"], // Array warna
-          borderColor: "#fff",
+          label: "Payment Methods",
+          data: dataValues,
+          backgroundColor: backgroundColors,
+          borderColor: "rgba(54, 162, 235, 1)",
           borderWidth: 1,
         },
       ],
     });
-  }, [filteredIncomes]);
+  };
 
-  const handlePrint = () => {
-    const printContents = document.getElementById("income-table")?.innerHTML;
-    const originalContents = document.body.innerHTML;
-
-    if (printContents) {
-      document.body.innerHTML = printContents;
-      window.print();
-      document.body.innerHTML = originalContents;
-      window.location.reload(); // Refresh to restore functionality
+  const handleMonthFilter = (month: string) => {
+    setSelectedMonth(month);
+    if (!month) {
+      setFilteredIncome(incomeData);
+      generateChartData(incomeData);
+      generatePaymentMethodChart(incomeData);
+      return;
     }
+
+    const filtered = incomeData.filter((income) => {
+      const incomeDate = new Date(income.tanggal);
+      const selectedMonthDate = new Date(month + "-01");
+      return (
+        incomeDate.getFullYear() === selectedMonthDate.getFullYear() &&
+        incomeDate.getMonth() === selectedMonthDate.getMonth()
+      );
+    });
+    setFilteredIncome(filtered);
+    generateChartData(filtered);
+    generatePaymentMethodChart(filtered);
   };
 
   const generatePDF = async () => {
     if (!tableRef.current) return;
-  
-    // Capture the table as a canvas using html2canvas
-    const canvas = await html2canvas(tableRef.current, {
-      scale: 2, // Scale for higher resolution
-      useCORS: true, // Handle CORS
-    });
-  
-    const imgData = canvas.toDataURL("image/png");
-  
+
     const pdf = new jsPDF("p", "mm", "a4");
+
+    // Add header to PDF
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-  
-    // Add a title and timestamp on the PDF
     pdf.setFontSize(18);
     pdf.text("Income Report", pdfWidth / 2, 10, { align: "center" });
     pdf.setFontSize(12);
     pdf.text("Generated on: " + new Date().toLocaleDateString(), 10, 20);
-  
-    // Add the table image (captured as PNG)
-    pdf.addImage(imgData, "PNG", 0, 30, pdfWidth, pdfHeight);
-  
-    // Save the generated PDF
+
+    // Render table to PDF
+    const canvasTable = await html2canvas(tableRef.current, {
+      scale: 2,
+      useCORS: true,
+    });
+    const imgTable = canvasTable.toDataURL("image/png");
+    const tableHeight = (canvasTable.height * pdfWidth) / canvasTable.width;
+    pdf.addImage(imgTable, "PNG", 0, 30, pdfWidth, tableHeight);
+
+    // Save PDF
     pdf.save("income-report.pdf");
   };
 
@@ -210,52 +216,51 @@ const Income: React.FC = () => {
     <Card>
       <CardHeader>
         <CardTitle>Income</CardTitle>
-
+        <CardDescription>
+          Overview of income with filters and charts.
+        </CardDescription>
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center gap-4">
             <label htmlFor="monthFilter" className="font-medium">
-              Filter Bulan:
+              Filter by Month:
             </label>
             <input
               type="month"
               id="monthFilter"
-              className="border rounded px-3 py-1"
               value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
+              onChange={(e) => handleMonthFilter(e.target.value)}
+              className="border rounded px-3 py-1"
             />
           </div>
           <button
             onClick={generatePDF}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800"
           >
             Download PDF
           </button>
         </div>
       </CardHeader>
       <CardContent>
-        {/* Tabel */}
         <div ref={tableRef} className="p-4 bg-white">
           <h2 className="text-center text-xl font-bold mb-4">Income Report</h2>
           <Table className="border-collapse border border-gray-300 w-full">
             <TableHeader className="bg-gray-200">
               <TableRow>
+                <TableHead className="border border-gray-300">Date</TableHead>
                 <TableHead className="border border-gray-300">
-                  Date
+                  Customer Name
                 </TableHead>
                 <TableHead className="border border-gray-300">
-                  Customer
+                  Vehicle Type
                 </TableHead>
                 <TableHead className="border border-gray-300">
-                  Vehicles
+                  License Plate
                 </TableHead>
                 <TableHead className="border border-gray-300">
-                  LicensePlate
+                  Rental Duration
                 </TableHead>
                 <TableHead className="border border-gray-300">
-                  Duration
-                </TableHead>
-                <TableHead className="border border-gray-300">
-                  Rental Cost
+                  Rental Fee
                 </TableHead>
                 <TableHead className="border border-gray-300">
                   Payment Method
@@ -264,47 +269,68 @@ const Income: React.FC = () => {
                   Payment Status
                 </TableHead>
                 <TableHead className="border border-gray-300">
-                  Amount
+                  Total Income
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {searchFilteredIncomes.map((income, index) => (
-                <TableRow key={index}>
-                  <TableCell>{income.tanggal}</TableCell>
-                  <TableCell>{income.namaPelanggan}</TableCell>
-                  <TableCell>{income.jenisKendaraan}</TableCell>
-                  <TableCell>{income.platNomor}</TableCell>
-                  <TableCell>{income.durasiSewa}</TableCell>
-                  <TableCell>{income.biayaSewa}</TableCell>
-                  <TableCell>{income.metodePembayaran}</TableCell>
-                  <TableCell>{income.statusPembayaran}</TableCell>
-                  <TableCell>{income.totalPendapatan}</TableCell>
+              {filteredIncome.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center text-gray-500">
+                    Data not found
+                  </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                filteredIncome.map((income, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="border border-gray-300">
+                      {income.tanggal}
+                    </TableCell>
+                    <TableCell className="border border-gray-300">
+                      {income.namaPelanggan}
+                    </TableCell>
+                    <TableCell className="border border-gray-300">
+                      {income.jenisKendaraan}
+                    </TableCell>
+                    <TableCell className="border border-gray-300">
+                      {income.platNomor}
+                    </TableCell>
+                    <TableCell className="border border-gray-300">
+                      {income.durasiSewa}
+                    </TableCell>
+                    <TableCell className="border border-gray-300">
+                      {income.biayaSewa}
+                    </TableCell>
+                    <TableCell className="border border-gray-300">
+                      {income.metodePembayaran}
+                    </TableCell>
+                    <TableCell className="border border-gray-300">
+                      {income.statusPembayaran}
+                    </TableCell>
+                    <TableCell className="border border-gray-300">
+                      {income.totalPendapatan}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
 
-        {/* Grid layout untuk charts */}
         <div className="grid gap-6 lg:grid-cols-2 pt-6">
-          {/* Bar Chart (Pendapatan Berdasarkan Tanggal) */}
+          {/* Bar Chart */}
           <div className="bg-white shadow-md rounded p-4">
             <h3 className="text-center text-lg font-semibold mb-2">
-              Pendapatan Berdasarkan Tanggal (Bar Chart)
+              Total Income (Bar Chart)
             </h3>
             {chartData ? (
               <Bar
                 data={chartData}
                 options={{
                   responsive: true,
-                  animation: {
-                    duration: 30, // Mengurangi durasi animasi
-                    easing: "easeOutBounce",
-                  },
                   plugins: {
                     legend: { position: "top" },
-                    title: { display: true, text: "Pendapatan per Tanggal" },
+                    title: { display: true, text: "Income Overview" },
                   },
                 }}
               />
@@ -313,24 +339,19 @@ const Income: React.FC = () => {
             )}
           </div>
 
-          {/* Doughnut Chart (Distribusi Pendapatan Berdasarkan Metode Pembayaran) */}
+          {/* Doughnut Chart */}
           <div className="bg-white shadow-md rounded p-4">
             <h3 className="text-center text-lg font-semibold mb-2">
-              Distribusi Pendapatan Berdasarkan Metode Pembayaran (Doughnut
-              Chart)
+              Payment Methods (Doughnut Chart)
             </h3>
-            {doughnutChartData ? (
+            {paymentMethodData ? (
               <Doughnut
-                data={doughnutChartData}
+                data={paymentMethodData}
                 options={{
                   responsive: true,
-                  animation: {
-                    duration: 30, // Mengurangi durasi animasi
-                    easing: "easeOutBounce",
-                  },
                   plugins: {
                     legend: { position: "top" },
-                    title: { display: true, text: "Distribusi Pendapatan" },
+                    title: { display: true, text: "Payment Methods" },
                   },
                 }}
               />
@@ -342,6 +363,4 @@ const Income: React.FC = () => {
       </CardContent>
     </Card>
   );
-};
-
-export default Income;
+}

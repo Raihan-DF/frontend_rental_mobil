@@ -3,6 +3,11 @@ import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookie from "js-cookie";
+import axios from "axios";
+import { elements } from "chart.js";
+import { delete_file, upload_multiple_file } from "@/app/actApi/uploadFile";
+import DragComponent from "../addVehicles/uploadImage";
+
 
 interface EditVehicleModalProps {
   isOpen: boolean;
@@ -28,7 +33,15 @@ const EditVehicleModal: React.FC<EditVehicleModalProps> = ({
   const [features, setFeature] = useState("");
   const [description, setDescription] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [vehicleTypes, setVehicleTypes] = useState<{ id: number; name: string }[]>([]);
+  const [vehicleTypes, setVehicleTypes] = useState<
+    { id: number; name: string }[]
+  >([]);
+  const [imageLama, setImageLama] = useState<string[]>([]);
+  const [deleteImage, setdeleteImage] = useState<string[]>([]);
+
+  const [files, setFiles] = useState<File[]>([]);
+
+  const handleEditFiles = (value: File[]) => setFiles(value);
 
   useEffect(() => {
     const fetchVehicleTypes = async () => {
@@ -56,20 +69,80 @@ const EditVehicleModal: React.FC<EditVehicleModalProps> = ({
       setImage(null); // Reset image when opening modal
       setFeature(vehicle.features || "");
       setDescription(vehicle.description || "");
+      setImageLama([]);
     }
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      throw new Error("Token tidak ditemukan. Harap login ulang.");
+    }
+
+    const imageLama = async () => {
+      const data = await axios.get(`api/vehicles/get_id/${vehicle.id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          AccessToken: token || "",
+        },
+      });
+
+      const images = data.data.images;
+      console.log(images);
+      setImageLama(images);
+    };
+    imageLama();
   }, [vehicle]);
+
+  const handleDeleteImageLama = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      throw new Error("Token tidak ditemukan. Harap login ulang.");
+    }
+
+    imageLama.forEach(async(elements: any) =>{
+      const deleteImage = await delete_file(elements,token);
+    })
+  }
 
   const handleUpdateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
 
-    if (!name || !year || !typeId || !transmission || !licensePlate || !harga || !features || !description) {
+    if (
+      !name ||
+      !year ||
+      !typeId ||
+      !transmission ||
+      !licensePlate ||
+      !harga ||
+      !features ||
+      !description
+    ) {
       setErrorMessage("All fields are required.");
       return;
     }
 
     try {
       const access_token = Cookie.get("access_token");
+
+      let uploadMultipleResponse = null;
+
+      const formData = new FormData();
+
+
+      // TODO: UPLOAD image ke file server dulu
+      if(files){
+        files.forEach((data) =>{
+          formData.append("file", data);
+        });
+
+        uploadMultipleResponse = await upload_multiple_file(formData, access_token as string);
+
+        console.log(uploadMultipleResponse);
+      }
+
+      const resultUploadedImages: string[] = uploadMultipleResponse.img_paths;
+
+      console.log(resultUploadedImages);
 
       const data = {
         name: name,
@@ -78,12 +151,10 @@ const EditVehicleModal: React.FC<EditVehicleModalProps> = ({
         transmission: transmission,
         licensePlate: licensePlate,
         harga: harga,
-        gambar: image ? image.name : vehicle.gambar, // Use existing image if new not uploaded
+        gambar: resultUploadedImages, // Use existing image if new not uploaded
         features: features,
         description: description,
       };
-
-      // TODO: UPLOAD image ke file server dulu
 
       const response = await fetch(`/api/vehicles/${vehicle.id}`, {
         method: "PUT",
@@ -97,17 +168,26 @@ const EditVehicleModal: React.FC<EditVehicleModalProps> = ({
       const result = await response.json();
 
       if (response.ok) {
-        toast.success("Vehicle updated successfully!", { position: "top-right", autoClose: 3000 });
+        toast.success("Vehicle updated successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
         onUpdateVehicle(result);
         setTimeout(onClose, 3000);
       } else {
         setErrorMessage(result.message || "Failed to update vehicle.");
-        toast.error(result.message || "Failed to update vehicle.", { position: "top-right", autoClose: 3000 });
+        toast.error(result.message || "Failed to update vehicle.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
       }
     } catch (error) {
       console.error("Error updating vehicle:", error);
       setErrorMessage("An error occurred. Please try again.");
-      toast.error("An error occurred. Please try again.", { position: "top-right", autoClose: 3000 });
+      toast.error("An error occurred. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -195,17 +275,6 @@ const EditVehicleModal: React.FC<EditVehicleModalProps> = ({
             />
           </div>
           <div>
-            <label className="sr-only">Image URL</label>
-            <input
-              type="file"
-              onChange={(e) => {
-                const files = e.target?.files;
-                setImage(files !== null && files.length > 0 ? files[0] : null);
-              }}
-              className="w-full rounded-lg border-gray-200 p-3 text-sm"
-            />
-          </div>
-          <div>
             <label className="sr-only">Features</label>
             <input
               type="text"
@@ -227,9 +296,32 @@ const EditVehicleModal: React.FC<EditVehicleModalProps> = ({
               required
             />
           </div>
+          {/* disini */}
+            {/* {imageLama.length!== 0 && imageLama?.map((data) => (
+              <div>
+                <img
+                  alt="gambar"
+                  src={`/api/file?filename=${data}`}
+                  className="h-32 w-full object-cover sm:h-40 lg:h-48 max-w-sm mx-auto"
+                />
+              </div>
+            ))}
+            <button
+              type="button"
+              className="px-5 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 mr-2"
+              onClick={handleDeleteImageLama}
+            >
+              Hapus gambar
+            </button> */}
+
+          {/* diatas */}
+
           {errorMessage && (
-            <p className="text-red-500 text-sm col-span-2 mb-4">{errorMessage}</p>
+            <p className="text-red-500 text-sm col-span-2 mb-4">
+              {errorMessage}
+            </p>
           )}
+          <DragComponent setFiles={handleEditFiles}/>
           <div className="col-span-2 flex justify-end">
             <button
               type="button"
