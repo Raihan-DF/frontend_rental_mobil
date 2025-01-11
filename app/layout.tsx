@@ -8,10 +8,10 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import {Inter as FontSans} from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+// const fontSans = FontSans({
+//   subsets: ["latin"],
+//   variable: "--font-sans",
+// });
 
 export const metadata: Metadata = {
   title: "CarLink",
@@ -29,7 +29,7 @@ export default function RootLayout({
       <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"/>
       </head>
       <body
-        className={cn("min-h-screen bg-background font-sans antialiased",fontSans.variable)}
+        className={cn("min-h-screen bg-background font-sans antialiased")}
       >
         <Navbar/>
         <NuqsAdapter>{children}</NuqsAdapter>

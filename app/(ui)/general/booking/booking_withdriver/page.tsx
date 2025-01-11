@@ -1,5 +1,5 @@
 "use client";
-import KijangInova from "../../../../assets/images/kijang_inova.png";
+import KijangInova from "@/assets/images/kijang_inova.png";
 import Image from "next/image";
 
 export default function VehiclesGeneral() {

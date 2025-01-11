@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -86,7 +87,7 @@ const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50`}>
       <ToastContainer />
       <div className="rounded-lg bg-white p-8 shadow-lg max-w-3xl w-full">
         <h3 className="text-lg font-bold mb-4">Add Employee</h3>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ChangePasswordModal from "../../components/modal/changePassword/page";
+// import ChangePasswordModal from "@/app/components/modal/changePassword/page";
 import { UploadFile, delete_file } from "@/app/actApi/uploadFile";
 import axios from "axios";
 import Image from "next/image";
@@ -24,7 +24,7 @@ function MyProfile() {
   const [isEditable, setIsEditable] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState(null); // Store selected file
 
   const [profilImgSrc, setProfilImgSrc] = useState<string | null>();
@@ -302,7 +302,7 @@ function MyProfile() {
         </section>
       )}
 
-      <ChangePasswordModal isOpen={isModalOpen} onClose={closeModal} />
+      {/* <ChangePasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> */}
     </div>
   );
 }

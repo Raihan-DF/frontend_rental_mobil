@@ -137,20 +137,6 @@
                   <TableCell>{booking.duration} hours</TableCell>
                   <TableCell>{booking.driverName || "N/A"}</TableCell>
                   <TableCell>{booking.driverPhone || "N/A"}</TableCell>
-                  {/* <TableCell>
-                    <Badge
-                      className={`text-xs ${
-                        booking.status === "Booked"
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-600 text-white"
-                      }`}
-                      variant={
-                        booking.status === "Booked" ? "secondary" : "outline"
-                      }
-                    >
-                      {booking.status}
-                    </Badge>
-                  </TableCell> */}
                   <TableCell className="text-right relative flex justify-center items-center">
                     <Icon
                       icon="mdi:dots-vertical"
