@@ -17,8 +17,8 @@ import {
 } from "@/app/(ui)/admin/components/ui/table";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
-import AddVehicleModal from "../../../../components/modal/vehicles/addVehicles/page";
-import EditVehicleModal from "@/app/components/modal/vehicles/editVehicles/page";
+import AddVehicleModal from "../../../../modal/vehicles/addVehicles/addVehicles";
+import EditVehicleModal from "@/app/modal/vehicles/editVehicles/editVehicles";
 
 // Definisikan tipe untuk kendaraan
 interface Vehicle {

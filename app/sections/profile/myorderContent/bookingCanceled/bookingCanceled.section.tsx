@@ -71,7 +71,7 @@ function BookingCanceled() {
       try {
         const response = await fetch("/api/bookings/cancel");
         const data = await response.json();
-
+        console.log(data);
         if (Array.isArray(data)) {
           setBookings(data);
         } else {
@@ -81,7 +81,6 @@ function BookingCanceled() {
         console.error("Error fetching bookings:", error);
       }
     }
-
     fetchBookings();
   }, []);
 
@@ -98,7 +97,7 @@ function BookingCanceled() {
               {booking.vehicle.images && booking.vehicle.images.length > 0 ? (
                 <img
                   alt={booking.vehicle.name}
-                  src={`/api/file?filename=${booking.vehicle.images[0].imageUrl}`} // Mengambil gambar pertama
+                  src={`/api/file?filename=${booking.vehicle.images[0]}`} // Mengambil gambar pertama
                   className="h-56 w-full rounded-md object-cover"
                 />
               ) : (

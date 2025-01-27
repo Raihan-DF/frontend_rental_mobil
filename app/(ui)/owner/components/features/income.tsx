@@ -192,14 +192,14 @@ export default function Income() {
 
     const pdf = new jsPDF("p", "mm", "a4");
 
-    // Add header to PDF
+    // Tambahkan header ke PDF
     const pdfWidth = pdf.internal.pageSize.getWidth();
     pdf.setFontSize(18);
     pdf.text("Income Report", pdfWidth / 2, 10, { align: "center" });
     pdf.setFontSize(12);
     pdf.text("Generated on: " + new Date().toLocaleDateString(), 10, 20);
 
-    // Render table to PDF
+    // Render tabel ke PDF
     const canvasTable = await html2canvas(tableRef.current, {
       scale: 2,
       useCORS: true,
@@ -208,7 +208,50 @@ export default function Income() {
     const tableHeight = (canvasTable.height * pdfWidth) / canvasTable.width;
     pdf.addImage(imgTable, "PNG", 0, 30, pdfWidth, tableHeight);
 
-    // Save PDF
+    // Tambahkan halaman baru untuk Bar Chart
+    const barChartCanvas = document.querySelector(
+      "#barChart"
+    ) as HTMLCanvasElement;
+    if (barChartCanvas) {
+      const barChartImage = barChartCanvas.toDataURL("image/png");
+      pdf.addPage();
+      pdf.setFontSize(16);
+      pdf.text("Income by Category (Bar Chart)", pdfWidth / 2, 10, {
+        align: "center",
+      });
+      pdf.addImage(
+        barChartImage,
+        "PNG",
+        10,
+        20,
+        pdfWidth - 20,
+        (barChartCanvas.height * (pdfWidth - 20)) / barChartCanvas.width
+      );
+    }
+
+    // Tambahkan halaman baru untuk Doughnut Chart
+    const doughnutChartCanvas = document.querySelector(
+      "#doughnutChart"
+    ) as HTMLCanvasElement;
+    if (doughnutChartCanvas) {
+      const doughnutChartImage = doughnutChartCanvas.toDataURL("image/png");
+      pdf.addPage();
+      pdf.setFontSize(16);
+      pdf.text("Income Distribution (Doughnut Chart)", pdfWidth / 2, 10, {
+        align: "center",
+      });
+      pdf.addImage(
+        doughnutChartImage,
+        "PNG",
+        30,
+        30,
+        pdfWidth - 60,
+        (doughnutChartCanvas.height * (pdfWidth - 60)) /
+          doughnutChartCanvas.width
+      );
+    }
+
+    // Simpan PDF
     pdf.save("income-report.pdf");
   };
 
@@ -325,6 +368,7 @@ export default function Income() {
             </h3>
             {chartData ? (
               <Bar
+                id="barChart"
                 data={chartData}
                 options={{
                   responsive: true,
@@ -346,6 +390,7 @@ export default function Income() {
             </h3>
             {paymentMethodData ? (
               <Doughnut
+                id="doughnutChart"
                 data={paymentMethodData}
                 options={{
                   responsive: true,

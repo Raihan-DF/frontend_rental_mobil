@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import ChangePasswordModal from "@/app/components/modal/changePassword/page";
+// import DialogDefault from "@/app/components/modal/changePassword/page";
 import { UploadFile, delete_file } from "@/app/actApi/uploadFile";
 import axios from "axios";
 import Image from "next/image";
+import DialogDefault from "@/app/custom_components/modal/changePassword/changePassword";
 
 function Dashboard() {
   return (
@@ -24,7 +25,7 @@ function MyProfile() {
   const [isEditable, setIsEditable] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null); // Store selected file
 
   const [profilImgSrc, setProfilImgSrc] = useState<string | null>();
@@ -33,9 +34,6 @@ function MyProfile() {
   >();
 
   const [newProfileImg, setNewProfileImg] = useState<File>();
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -80,6 +78,9 @@ function MyProfile() {
 
     fetchProfile();
   }, []);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const handleEditClick = () => {
     setIsEditable((prev) => !prev);
@@ -301,8 +302,9 @@ function MyProfile() {
           </div>
         </section>
       )}
-
-      {/* <ChangePasswordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> */}
+      {isModalOpen &&(
+        <DialogDefault isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      )}
     </div>
   );
 }

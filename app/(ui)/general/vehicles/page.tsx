@@ -7,6 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookie from "js-cookie";
 import noCar from "@/assets/images/no-car.png";
+import { DetailVehicles } from "@/app/custom_components/modal/detailVehicles/detailVehicles";
 
 export interface Vehicle {
   id: number;
@@ -46,25 +47,11 @@ export default function VehiclesGeneral() {
   const [selectedTransmission, setSelectedTransmission] = useState<string[]>(
     []
   );
-  const [selectedPrice, setSelectedPrice] = useState([500000, 1000000000]);
+  // const [selectedPrice, setSelectedPrice] = useState([500000, 1000000000]);
   const [selectedType, setSelectedType] = useState<string[]>([]);
   const [allVehicles, setAllVehicles] = useState<Vehicle[]>([]);
-
-  // useEffect(() => {
-  //   const fetchVehicles = async () => {
-  //     try {
-  //       const response = await fetch("/api/vehicles");
-  //       if (!response.ok) throw new Error("Error fetching vehicles data");
-  //       const data = await response.json();
-  //       setVehicles(data); // Data yang ditampilkan
-  //       setAllVehicles(data); // Data asli untuk filtering
-  //     } catch (error) {
-  //       console.error("Error fetching vehicles:", error);
-  //     }
-  //   };
-
-  //   fetchVehicles();
-  // }, []);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [vehicleId, setVehicleId] = useState<number>(0);
 
   const applyFilters = () => {
     let filteredVehicles = allVehicles;
@@ -77,10 +64,10 @@ export default function VehiclesGeneral() {
     }
 
     // Filter berdasarkan harga
-    filteredVehicles = filteredVehicles.filter(
-      (vehicle) =>
-        vehicle.harga >= selectedPrice[0] && vehicle.harga <= selectedPrice[1]
-    );
+    // filteredVehicles = filteredVehicles.filter(
+    //   (vehicle) =>
+    //     vehicle.harga >= selectedPrice[0] && vehicle.harga <= selectedPrice[1]
+    // );
 
     // Filter berdasarkan type
     if (selectedType.length > 0) {
@@ -93,10 +80,8 @@ export default function VehiclesGeneral() {
     setVehicles(filteredVehicles);
   };
 
-  // Trigger applyFilters setiap kali filter berubah
-  // useEffect(() => {
-  //   applyFilters();
-  // }, [selectedTransmission, selectedPrice, selectedType]);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const handleTransmissionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -114,8 +99,37 @@ export default function VehiclesGeneral() {
 
   const resetFilters = () => {
     setSelectedTransmission([]);
-    setSelectedPrice([500000, 1000000000]);
+    // setSelectedPrice([500000, 1000000000]);
     setSelectedType([]);
+  };
+
+  const checkBooking = async (vehicleId: number) => {
+    const accessToken = localStorage.getItem("access_token");
+
+    if (!accessToken) {
+      toast.error(
+        "You must be logged in to book a vehicle. Redirecting to login...",
+        {
+          position: "top-right",
+          autoClose: 3000, // 3 detik sebelum redirect
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        }
+      );
+
+      // Redirect ke halaman login setelah 3 detik
+      setTimeout(() => {
+        window.location.href = "/auth/login";
+      }, 3000);
+
+      return;
+    }
+
+    window.location.href = `/general/booking?pickUpDateTime=${pickUpDateTime}&duration=${duration}&pickupLocation=${pickUpLocation}&vehicleId=${vehicleId}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -189,24 +203,24 @@ export default function VehiclesGeneral() {
       // setVehicles(availableVehicles); // Update state kendaraan
       setIsLoading(false);
       if (selectedTransmission.length > 0) {
-        availableVehicles = availableVehicles.filter((vehicle:any) =>
+        availableVehicles = availableVehicles.filter((vehicle: any) =>
           selectedTransmission.includes(vehicle.transmission)
         );
       }
-  
+
       // Filter berdasarkan harga
-      availableVehicles = availableVehicles.filter(
-        (vehicle:any) =>
-          vehicle.harga >= selectedPrice[0] && vehicle.harga <= selectedPrice[1]
-      );
-  
+      // availableVehicles = availableVehicles.filter(
+      //   (vehicle: any) =>
+      //     vehicle.harga >= selectedPrice[0] && vehicle.harga <= selectedPrice[1]
+      // );
+
       // Filter berdasarkan type
       if (selectedType.length > 0) {
-        availableVehicles = availableVehicles.filter((vehicle:any) =>
+        availableVehicles = availableVehicles.filter((vehicle: any) =>
           selectedType.includes(vehicle.type.typeName)
         );
       }
-  
+
       // Update state vehicles
       setVehicles(availableVehicles);
       toast.success("Vehicles successfully loaded.");
@@ -217,9 +231,9 @@ export default function VehiclesGeneral() {
       toast.error("Failed to fetch vehicles. Please try again.");
     }
   };
-  if(!pickUpLocation || !pickUpDateTime || !duration){
+  if (!pickUpLocation || !pickUpDateTime || !duration) {
     return (
-      <div>
+      <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <header className="mt-10 mb-28">
           <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
             Vehicles
@@ -264,7 +278,7 @@ export default function VehiclesGeneral() {
                 </div>
 
                 {/* Price Filter */}
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <h4 className="font-medium text-gray-600">Price per Day</h4>
                   <div className="flex flex-col">
                     <label className="flex items-center">
@@ -278,7 +292,7 @@ export default function VehiclesGeneral() {
                       Rp 500,000 - Rp 1,000,000,000
                     </label>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Vehicle Type Filter */}
                 <div>
@@ -390,7 +404,7 @@ export default function VehiclesGeneral() {
           </div>
         </header>
       </div>
-    )
+    );
   }
   return (
     <section>
@@ -439,7 +453,7 @@ export default function VehiclesGeneral() {
                 </div>
 
                 {/* Price Filter */}
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <h4 className="font-medium text-gray-600">Price per Day</h4>
                   <div className="flex flex-col">
                     <label className="flex items-center">
@@ -453,7 +467,7 @@ export default function VehiclesGeneral() {
                       Rp 500,000 - Rp 1,000,000,000
                     </label>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Vehicle Type Filter */}
                 <div>
@@ -493,6 +507,7 @@ export default function VehiclesGeneral() {
                 </div>
               </div>
             </div>
+            
             <div className="h-auto rounded-lg bg-gray-200 lg:col-span-2">
               {/* Form Pencarian */}
               <div className="p-6 border border-gray-200 rounded-lg bg-gray-50">
@@ -599,14 +614,14 @@ export default function VehiclesGeneral() {
                 vehicles.map((vehicle) => (
                   <li
                     key={vehicle.id}
-                    className="border rounded-lg shadow-lg overflow-hidden"
+                    className="cursor-default border rounded-lg shadow-lg overflow-hidden"
                   >
                     <div className="inline-block rounded-full bg-green-100 px-3 py-1 m-4">
                       <span className="text-sm font-medium text-green-800">
                         Available
                       </span>
                     </div>
-                    <a href="#" className="group block overflow-hidden">
+                    <a href="#" className="cursor-default group block overflow-hidden">
                       <Image
                         src={`/api/file?filename=${
                           vehicle.images.at(0)?.imageUrl
@@ -614,7 +629,11 @@ export default function VehiclesGeneral() {
                         alt={vehicle.name}
                         width={300}
                         height={200}
-                        className="h-[200px] w-full object-cover"
+                        onClick={() => {
+                          openModal();
+                          setVehicleId(vehicle.id);
+                        }}
+                        className="cursor-pointer hover:opacity-70 h-[200px] w-full object-cover"
                       />
                       <div className="p-4">
                         <h3 className="text-lg font-bold text-gray-800">
@@ -632,9 +651,7 @@ export default function VehiclesGeneral() {
                             /day
                           </span>
                           <button
-                            onClick={() => {
-                              window.location.href = `/general/booking?pickUpDateTime=${pickUpDateTime}&duration=${duration}&pickupLocation=${pickUpLocation}&vehicleId=${vehicle.id}`;
-                            }}
+                            onClick={() => checkBooking(vehicle.id)}
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600"
                           >
                             Booking
@@ -654,6 +671,13 @@ export default function VehiclesGeneral() {
                     className="object-cover rounded-lg" // Menggunakan object-cover dan rounded untuk mempercantik
                   />
                 </div>
+              )}
+              {isModalOpen && (
+                <DetailVehicles
+                  isOpen={isModalOpen}
+                  vehicleId={vehicleId}
+                  onClose={() => setIsModalOpen(false)}
+                />
               )}
             </ul>
           </div>

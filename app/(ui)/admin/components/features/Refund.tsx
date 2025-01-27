@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/app/(ui)/admin/components/ui/table";
 import { Icon } from "@iconify/react";
-import VerifyPaymentModal from "@/app/components/modal/refundConfirmation/page";
+import VerifyPaymentModal from "@/app/modal/refundConfirmation/refundConfirmation";
 
 // Definisikan tipe untuk payment
 interface Payment {
@@ -55,7 +55,7 @@ export default function Refund() {
           // Filter hanya pembayaran dengan status "Pending request refund" atau "Success Refund"
           const filteredPayments = data.filter(
             (payment: Payment) =>
-              payment.status === "Pending request refund" || payment.status === "Success Refund"
+              payment.status === "Pending request refund" || payment.status === "Success Refund" || payment.status === "Invalid"
           );
           setPayments(filteredPayments); // Set data pembayaran terfilter ke state
         } catch (error) {
@@ -90,7 +90,7 @@ export default function Refund() {
           body: JSON.stringify({ status }),
         }
       );
-
+      console.log("ini response",response);
       if (!response.ok) throw new Error("Error verifying payment");
 
       setPayments((prevPayments) =>
@@ -159,12 +159,14 @@ export default function Refund() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
+                  {payment.status === "Pending request refund" && (
                     <button
                       className="mr-2 px-2 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"
                       onClick={() => openVerifyModal(payment)}
                     >
                       Confirmation
                     </button>
+                  )}
                   </TableCell>
                 </TableRow>
               ))}

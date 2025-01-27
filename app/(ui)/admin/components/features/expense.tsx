@@ -15,8 +15,8 @@ import {
 } from "@/app/(ui)/admin/components/ui/table";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
-import AddExpenseModal from "@/app/components/modal/expense/addExpense/page";
-import EditExpenseModal from "@/app/components/modal/expense/editExpense/page";
+import AddExpenseModal from "@/app/modal/expense/addExpense/addExpense";
+import EditExpenseModal from "@/app/modal/expense/editExpense/editExpense";
 
 // Definisikan tipe untuk Expense
 interface Expense {
@@ -274,14 +274,14 @@ export default function Expenses() {
                 </TableCell>
                 <TableCell className="text-right">
                   <button
+                    className="px-4 py-2 bg-blue-500 text-white rounded"
                     onClick={() => handleEditExpense(expense)}
-                    className="mr-2 text-blue-500"
                   >
                     Edit
                   </button>
                   <button
+                    className="ml-2 px-4 py-2 bg-red-500 text-white rounded"
                     onClick={() => handleSoftDelete(expense.id)}
-                    className="text-red-500"
                   >
                     Delete
                   </button>

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Navbar } from "./components/navbar/navbar";
+import { Navbar } from "./custom_components/navbar/navbar";
 import axios from "axios";
 import Image from "next/image";
 import Background from "../assets/images/background_landingpage.png";
@@ -112,13 +112,12 @@ export default function Home() {
 
         {/* Konten di atas background */}
         <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-between items-center px-2 gap-4 py-16">
-
           {/* Inputan bagian bawah */}
           {/* <div className="bg-white w-5/6 rounded-lg shadow-lg p-2 flex flex-col items-center"> */}
-            {/* Form Input */}
-            {/* <div className="flex flex-wrap gap-4 items-center justify-center"> */}
-              {/* Pickup Location */}
-              {/* <div className="flex flex-col">
+          {/* Form Input */}
+          {/* <div className="flex flex-wrap gap-4 items-center justify-center"> */}
+          {/* Pickup Location */}
+          {/* <div className="flex flex-col">
                 <label className="text-gray-700 font-medium mb-1">
                   Pickup Location
                 </label>
@@ -129,8 +128,8 @@ export default function Home() {
                 />
               </div> */}
 
-              {/* Pickup Date */}
-              {/* <div className="flex flex-col">
+          {/* Pickup Date */}
+          {/* <div className="flex flex-col">
                 <label className="text-gray-700 font-medium mb-1">
                   Pickup Date
                 </label>
@@ -138,10 +137,10 @@ export default function Home() {
                   type="date"
                   className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 /> */}
-              </div>
+        </div>
 
-              {/* Duration */}
-              {/* <div className="flex flex-col">
+        {/* Duration */}
+        {/* <div className="flex flex-col">
                 <label className="text-gray-700 font-medium mb-1">
                   Duration
                 </label>
@@ -152,8 +151,8 @@ export default function Home() {
                 />
               </div> */}
 
-              {/* Pickup Time */}
-              {/* <div className="flex flex-col">
+        {/* Pickup Time */}
+        {/* <div className="flex flex-col">
                 <label className="text-gray-700 font-medium mb-1">
                   Pickup Time
                 </label>
@@ -163,8 +162,8 @@ export default function Home() {
                 />
               </div> */}
 
-              {/* Button Search */}
-              {/* <button className="bg-blue-800 text-white font-bold px-6 py-2 rounded-md hover:bg-blue-900 transition">
+        {/* Button Search */}
+        {/* <button className="bg-blue-800 text-white font-bold px-6 py-2 rounded-md hover:bg-blue-900 transition">
                 Search
               </button>
             </div>
@@ -178,8 +177,9 @@ export default function Home() {
           <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
             <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-2 lg:items-center lg:gap-x-12">
               <div className="mx-auto max-w-lg lg:mx-0 ltr:lg:text-left rtl:lg:text-right">
-                <h2 className="text-3xl font-bold sm:text-4xl">About Us</h2>
-
+                <h2 className="text-3xl font-extrabold sm:text-4xl">
+                  Tentang Carlink
+                </h2>
                 <p className="mt-4 text-gray-600">
                   CARLINK adalah perusahaan rental mobil terkemuka di Yogyakarta
                   yang menawarkan beragam pilihan kendaraan berkualitas, mulai
@@ -191,97 +191,46 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {/* Kotak besar */}
+              <div className="grid grid-cols-3 gap-6 lg:gap-8">
+                {/* Kotak besar di kiri dengan Google Maps */}
                 <a
-                  className="col-span-1 sm:col-span-2 block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
+                  className="col-span-2 row-span-2 block rounded-xl border bg-gray-400 border-gray-100 p-6 shadow-lg hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
                   href="#"
                 >
-                  <span className="inline-block rounded-lg bg-gray-50 p-3">
-                    <svg
-                      className="size-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                      <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952  0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
-                      ></path>
-                    </svg>
-                  </span>
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d247.05442043540603!2d110.40696117699834!3d-7.803507747524365!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sid!4v1736822204130!5m2!1sen!2sid"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </a>
 
-                  <h2 className="mt-2 font-bold">Konten Besar</h2>
-
-                  <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
-                    Ini adalah konten untuk kotak besar.
+                {/* Kotak kecil atas kanan */}
+                <a
+                  className="block rounded-xl border bg-[#3C4D55] border-gray-100 p-6 shadow-lg hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
+                  href="#"
+                >
+                  <h2 className="mt-2 font-extrabold text-[#C8F904] text-xl">
+                    +1 Years Experience
+                  </h2>
+                  <p className="sm:mt-1 sm:block sm:text-sm sm:text-white">
+                    Perusahaan berdiri lebih dari 1 tahun.
                   </p>
                 </a>
 
-                {/* Kotak kecil 1 */}
+                {/* Kotak kecil bawah kanan */}
                 <a
-                  className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
+                  className="block rounded-xl border bg-[#0F212B] border-gray-100 p-6 shadow-lg hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
                   href="#"
                 >
-                  <span className="inline-block rounded-lg bg-gray-50 p-3">
-                    <svg
-                      className="size-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                      <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
-                      ></path>
-                    </svg>
-                  </span>
-
-                  <h2 className="mt-2 font-bold">Konten Kecil 1</h2>
-
-                  <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
-                    Ini adalah konten untuk kotak kecil 1.
-                  </p>
-                </a>
-
-                {/* Kotak kecil 2 */}
-                <a
-                  className="block rounded-xl border border-gray-100 p-4 shadow-sm hover:border-gray-200 hover:ring-1 hover:ring-gray-200 focus:outline-none focus:ring"
-                  href="#"
-                >
-                  <span className="inline-block rounded-lg bg-gray-50 p-3">
-                    <svg
-                      className="size-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                      <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l 4-2.222"
-                      ></path>
-                    </svg>
-                  </span>
-
-                  <h2 className="mt-2 font-bold">Konten Kecil 2</h2>
-
-                  <p className="hidden sm:mt-1 sm:block sm:text-sm sm:text-gray-600">
-                    Ini adalah konten untuk kotak kecil 2.
+                  <h2 className="mt-2 font-extrabold text-[#C8F904] text-xl">
+                    Lebih dari 10 Kendaraan
+                  </h2>
+                  <p className="sm:mt-1 sm:block sm:text-sm sm:text-white">
+                    Kami memiliki lebih dari 10 kendaraan.
                   </p>
                 </a>
               </div>
@@ -289,6 +238,7 @@ export default function Home() {
           </div>
         </section>
       </div>
+
       <div>
         <section>
           <div
@@ -302,12 +252,14 @@ export default function Home() {
           >
             <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
               <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-16">
-                <div className="relative justify-center lg:col-span-2 h-64 overflow-hidden rounded-lg sm:h-80 lg:h-full">
+                <div className="relative justify-center lg:col-span-2 h-80 overflow-hidden rounded-lg sm:h-80 lg:h-[400px]">
+                  {" "}
+                  {/* Adjust height */}
                   <Image
                     alt="Toyota Alphard 2023"
                     src={Alphard}
                     className="absolute inset-0 h-full w-full object-cover"
-                    layout="fill" // Use layout fill to ensure the image covers the container
+                    layout="fill" // Keep layout fill for responsive scaling
                   />
                 </div>
 
@@ -419,6 +371,9 @@ export default function Home() {
       </section>
       <section className="bg-white">
         <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+            Why Choose Us
+          </h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4 pt-4">
             <a href="#" className="block">
               <div className="relative overflow-hidden bg-gray-200 rounded-lg shadow-lg h-48 w-48 mx-auto">

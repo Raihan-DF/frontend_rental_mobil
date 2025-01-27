@@ -6,7 +6,6 @@ import { useSearchParams, useRouter } from 'next/navigation';
 const CreateEmployeePage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(true); // Menyimpan status modal
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const router = useRouter();
@@ -14,11 +13,6 @@ const CreateEmployeePage: React.FC = () => {
   useEffect(() => {
     console.log(token);
   }, [token]);
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    router.push('/'); // Redirect setelah modal ditutup, bisa sesuaikan
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,21 +45,16 @@ const CreateEmployeePage: React.FC = () => {
     }
   };
 
-  if (!isModalOpen) return null;
-
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-        <button
-          onClick={handleCloseModal}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-        >
-          &times;
-        </button>
-        <h2 className="text-2xl font-bold mb-4 text-center">Create Employee</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 py-8">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+        <h2 className="text-3xl font-semibold mb-6 text-center text-gray-700">
+          Create Employee
+        </h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex flex-col">
-            <label htmlFor="username" className="text-lg font-semibold">
+            <label htmlFor="username" className="text-lg font-medium text-gray-600">
               Username
             </label>
             <input
@@ -73,13 +62,13 @@ const CreateEmployeePage: React.FC = () => {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="p-2 border rounded-md"
+              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="password" className="text-lg font-semibold">
+            <label htmlFor="password" className="text-lg font-medium text-gray-600">
               Password
             </label>
             <input
@@ -87,18 +76,26 @@ const CreateEmployeePage: React.FC = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="p-2 border rounded-md"
+              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          <button
-            type="submit"
-            className="bg-blue-500 text-white p-2 rounded-md w-full"
-          >
-            Set Employee
-          </button>
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white p-3 rounded-md w-full hover:bg-blue-700 transition"
+            >
+              Set Employee
+            </button>
+          </div>
         </form>
+        
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">
+            Already have an account? <a href="/auth/login" className="text-blue-500 hover:underline">Login here</a>.
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -166,10 +166,10 @@ export default function Maintenance() {
                 filteredMaintenances.map((maintenance) => (
                   <TableRow key={maintenance.id}>
                     <TableCell className="border border-gray-300">
-                      {maintenance.date}
+                      {new Date(maintenance.date).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="border border-gray-300">
-                      {new Date(maintenance.date).toLocaleDateString()}
+                      {maintenance.mechanicName}
                     </TableCell>
                     <TableCell className="border border-gray-300">
                       {maintenance.vehicle?.name || "N/A"}

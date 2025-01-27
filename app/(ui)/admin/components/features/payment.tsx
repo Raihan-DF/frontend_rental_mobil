@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/app/(ui)/admin/components/ui/table";
 import { Icon } from "@iconify/react";
-import VerifyPaymentModal from "@/app/components/modal/paymentConfirmation/page";
+import VerifyPaymentModal from "@/app/modal/paymentConfirmation/paymentConfirmation";
 
 // Definisikan tipe untuk payment
 interface Payment {
@@ -142,6 +142,8 @@ export default function Payments() {
                           ? "bg-green-500 text-white"
                           : payment.status === "In Booking"
                           ? "bg-blue-500 text-white"
+                          : payment.status === "PENDING"
+                          ? "bg-orange-500 text-white"
                           : "bg-red-500 text-white"
                       }`}
                       variant={
@@ -150,14 +152,16 @@ export default function Payments() {
                     >
                       {payment.status}
                     </Badge>
-                  </TableCell >
+                  </TableCell>
                   <TableCell className="text-center">
-                    <button
-                      className="mr-2 px-2 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"
-                      onClick={() => openVerifyModal(payment)}
-                    >
-                      Confirmation
-                    </button>
+                    {payment.status === "PENDING" && (
+                      <button
+                        className="mr-2 px-2 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"
+                        onClick={() => openVerifyModal(payment)}
+                      >
+                        Confirmation
+                      </button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

@@ -134,7 +134,7 @@
                   <TableCell>
                     {new Date(booking.pickupDateTime).toLocaleString()}
                   </TableCell>
-                  <TableCell>{booking.duration} hours</TableCell>
+                  <TableCell>{booking.duration} Days</TableCell>
                   <TableCell>{booking.driverName || "N/A"}</TableCell>
                   <TableCell>{booking.driverPhone || "N/A"}</TableCell>
                   <TableCell className="text-right relative flex justify-center items-center">

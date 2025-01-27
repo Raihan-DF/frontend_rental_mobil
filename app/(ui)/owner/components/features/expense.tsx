@@ -171,18 +171,46 @@ export default function Expenses() {
     const tableHeight = (canvasTable.height * pdfWidth) / canvasTable.width;
     pdf.addImage(imgTable, "PNG", 0, 30, pdfWidth, tableHeight);
 
-    // Render chart ke PDF
-    const chartCanvas = document.querySelector("canvas") as HTMLCanvasElement;
-    if (chartCanvas) {
-      const chartImage = chartCanvas.toDataURL("image/png");
-      pdf.addPage(); // Tambahkan halaman baru untuk chart
+    // Tambahkan halaman baru untuk Bar Chart
+    const barChartCanvas = document.querySelector(
+      "canvas"
+    ) as HTMLCanvasElement;
+    if (barChartCanvas) {
+      const barChartImage = barChartCanvas.toDataURL("image/png");
+      pdf.addPage();
+      pdf.setFontSize(16);
+      pdf.text("Expenses by Category (Bar Chart)", pdfWidth / 2, 10, {
+        align: "center",
+      });
       pdf.addImage(
-        chartImage,
+        barChartImage,
         "PNG",
         10,
-        10,
+        20,
         pdfWidth - 20,
-        (chartCanvas.height * (pdfWidth - 20)) / chartCanvas.width
+        (barChartCanvas.height * (pdfWidth - 20)) / barChartCanvas.width
+      );
+    }
+
+    // Tambahkan halaman baru untuk Doughnut Chart
+    const doughnutChartCanvas = document.querySelectorAll(
+      "canvas"
+    )[1] as HTMLCanvasElement;
+    if (doughnutChartCanvas) {
+      const doughnutChartImage = doughnutChartCanvas.toDataURL("image/png");
+      pdf.addPage();
+      pdf.setFontSize(16);
+      pdf.text("Expense Distribution (Doughnut Chart)", pdfWidth / 2, 10, {
+        align: "center",
+      });
+      pdf.addImage(
+        doughnutChartImage,
+        "PNG",
+        30,
+        30,
+        pdfWidth - 60,
+        (doughnutChartCanvas.height * (pdfWidth - 60)) /
+          doughnutChartCanvas.width
       );
     }
 

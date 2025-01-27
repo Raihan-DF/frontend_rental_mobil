@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Navbar } from "./components/navbar/navbar";
-import { Footer } from "./components/footer/footer";
+import { Navbar } from "./custom_components/navbar/navbar";
+import { Footer } from "./custom_components/footer/footer";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import {Inter as FontSans} from "next/font/google";

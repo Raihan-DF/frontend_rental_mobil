@@ -17,8 +17,8 @@ import {
 } from "@/app/(ui)/admin/components/ui/table";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
-import AddMaintenanceModal from "@/app/components/modal/maintenance/addMaintenance/page";
-import EditMaintenanceModal from "@/app/components/modal/maintenance/editMaintenance/page";
+import AddMaintenanceModal from "@/app/modal/maintenance/addMaintenance/addMaintenance";
+import EditMaintenanceModal from "@/app/modal/maintenance/editMaintenance/editMaintenance";
 
 // Definisikan tipe untuk maintenance
 interface Maintenance {
@@ -142,31 +142,22 @@ export default function Maintenance() {
                 </TableCell>
                 <TableCell className="text">{maintenance.details}</TableCell>
                 <TableCell className="text">{maintenance.status}</TableCell>
-                <TableCell className="text-right relative flex justify-center items-center">
-                  <Icon
-                    icon="mdi:dots-vertical"
-                    className="cursor-pointer"
-                    onClick={() => toggleOptions(maintenance.id)}
-                  />
-                  {showOptions === maintenance.id && (
-                    <div className="absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded shadow-lg z-10">
-                      <button
-                        className="w-full text-left px-2 py-1 hover:bg-gray-100"
-                        onClick={() => {
-                          setMaintenanceToEdit(maintenance);
-                          setIsModalEditOpen(true);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="w-full text-left px-2 py-1 hover:bg-gray-100"
-                        onClick={() => deleteMaintenance(maintenance.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
+                <TableCell className="text-right">
+                  <button
+                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                    onClick={() => {
+                      setMaintenanceToEdit(maintenance);
+                      setIsModalEditOpen(true);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="ml-2 px-4 py-2 bg-red-500 text-white rounded"
+                    onClick={() => deleteMaintenance(maintenance.id)}
+                  >
+                    Delete
+                  </button>
                 </TableCell>
               </TableRow>
             ))}

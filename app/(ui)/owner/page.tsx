@@ -188,9 +188,7 @@ export default function Dashboard() {
 
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           {activeMenu === "dashboard" && <DashboardOwner/>}
-          {activeMenu === "employee" && <Employee setActiveMenu={function (value: string): void {
-            throw new Error("Function not implemented.");
-          } }/>}
+          {activeMenu === "employee" && <Employee/>}
           {activeMenu === "income" && <Income />}
           {activeMenu === "maintenance" && <Maintenance />}
           {activeMenu === "expense" && <Expense />}
