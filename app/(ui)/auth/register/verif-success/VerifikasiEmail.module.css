@@ -1,0 +1,56 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Mengisi tinggi tampilan */
+  background-color: #f0f4f8; /* Warna latar belakang yang lembut */
+  font-family: 'Arial', sans-serif;
+}
+
+.card {
+  display: flex; /* Mengaktifkan flexbox */
+  flex-direction: column; /* Mengatur elemen dalam kolom */
+  align-items: center; /* Memusatkan elemen secara horizontal */
+  justify-content: center; /* Memusatkan elemen secara vertikal */
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px; /* Membatasi lebar maksimum */
+}
+
+
+.image {
+  margin-bottom: 1rem; /* Jarak di bawah gambar */
+}
+
+.loadingText {
+  color: #555; /* Warna untuk teks loading */
+}
+
+.successText {
+  color: #28a745; /* Warna hijau untuk teks sukses */
+  font-weight: bold;
+}
+
+.errorText {
+  color: #dc3545; /* Warna merah untuk teks error */
+  font-weight: bold;
+}
+
+.loginButton {
+  margin-top: 1.5rem; /* Jarak di atas tombol */
+  padding: 0.75rem 1.5rem; /* Padding dalam tombol */
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff; /* Warna latar belakang tombol */
+  color: white; /* Warna teks tombol */
+  font-size: 1rem; /* Ukuran font tombol */
+  cursor: pointer; /* Mengubah kursor saat hover */
+  transition: background-color 0.3s; /* Transisi warna latar belakang */
+}
+
+.loginButton:hover {
+  background-color: #0056b3; /* Warna latar belakang saat hover */
+}
